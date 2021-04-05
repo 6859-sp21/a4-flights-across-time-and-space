@@ -2,116 +2,84 @@
 <meta charset="utf-8">
 
 <!-- Load d3.js -->
-<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3.v6.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
-<!-- <script src="https://d3js.org/d3-geo.v2.min.js"></script> -->
+<script src="https://d3js.org/d3-array.v2.min.js"></script>
+<script src="https://d3js.org/d3-geo.v2.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v3.min.js"></script>
 
 <!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="440" height="300"></svg>
-<!-- 
+<svg id="my_dataviz" width="600" height="600"></svg>
 <script>
 
-// The svg
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+  // The svg
+  var svg = d3.select("svg"),
+      width = +svg.attr("width"),
+      height = +svg.attr("height");
 
-// Map and projection
-var projection = d3.geoMercator()
-    .center([-73.97, 40.78])                // GPS of location to zoom on
-    .scale(20000)                       // This is like the zoom
-    .translate([ width/2, height/2 ])
-
-// Load external data and boot
-d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson", function(data){
-// d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function(data){
-
-    // Filter data
-    // data.features = data.features.filter(function(d){console.log(d.properties.name) ; return d.properties.name=="Manhattan"})
-    // var center = ;
- //    path = d3.geoPath(projection);
-	// projection.center(path.centroid(data));
-    // Draw the map
-    svg.append("g")
-        .selectAll("path")
-        .data(data.features)
-        .enter()
-        .append("path")
-          .attr("fill", "grey")
-          .attr("d", d3.geoPath()
-              .projection(projection)
-          )
-        .style("stroke", "black")
-        .style("opacity", .3)
-})
-
-</script>
- -->
-<script>
-
-// The svg
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
-
-// Map and projection
-var projection = d3.geoMercator()
-    .center([-74, 40.78])                // GPS of location to zoom on
-    .scale(1020)                       // This is like the zoom
-    .translate([ width/2, height/2 ])
+  // Map and projection
+  var projection = d3.geoMercator()
+      .center([-74, 40.78]) // GPS of location to zoom on
+      .scale(50000) // This is like the zoom
+      .translate([ width/2, height/2 ]);
 
 
-d3.csv("/Stations.csv", function(data) {
-  console.log(data);
-    // for (var i = 0; i < data.length; i++) {
-    //     console.log(data[i].Name);
-    //     console.log(data[i].Age);
-    // }
-});
+  // get NYC map
+  d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson").then(mapData => {
+      // Draw the map
+      svg.append("g")
+          .selectAll("path")
+          .data(mapData.features)
+          .enter()
+          .append("path")
+            .attr("fill", "#b8b8b8")
+            .attr("d", d3.geoPath()
+                .projection(projection)
+            )
+          .style("stroke", "black")
+          .style("opacity", .3);
 
-// Create data for circles:
-var markers = [
-  {long: -74, lat: 40}, // corsica
-  {long: 40, lat: -74}, // nice
-  {long: 2.349, lat: 48.864}, // Paris
-  {long: -1.397, lat: 43.664}, // Hossegor
-  {long: 3.075, lat: 50.640}, // Lille
-  {long: -3.83, lat: 58}, // Morlaix
-];
+          // get station data (name, location, etc)
+          d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
+            // get turnstile data
+            d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/MTA_formatted.csv").then(MTAData => {
+      
 
-// Load external data and boot
-d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson", function(data){
+              var counts = MTAData.filter(c => c.DATE === '01/19');
+              var bubbleData = [];
+              let done = [];
+              for (let i=0; i < stationData.length; i++){
+                if (!done.includes(stationData[i]['Stop Name'].toUpperCase())){
+                  let countPts = counts.filter(c => c.STATION === stationData[i]['Stop Name'].toUpperCase());
+                  if (countPts.length > 0){
+                    let d = {};
+                    d.long = stationData[i]['GTFS Longitude'];
+                    d.lat = stationData[i]['GTFS Latitude'];
+                    d.group = stationData[i].Borough;
+                    d.size = countPts[0].ENTRIES/10000000000.0;
+                    bubbleData.push(d);
+                    done.push(stationData[i]['Stop Name'].toUpperCase());
+                  }
+                }
+              }
 
-    // Filter data
-    // data.features = data.features.filter( function(d){return d.properties.name=="France"} )
+              svg
+              .selectAll("myCircles")
+              .data(bubbleData)
+              .enter()
+              .append("circle")
+                .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
+                .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
+                .attr("r", function(d){ return d.size })
+                .style("fill", "69b3a2")
+                .attr("stroke", "#69b3a2")
+                .attr("stroke-width", 3)
+                .attr("fill-opacity", .4)
 
-    // Draw the map
-    svg.append("g")
-        .selectAll("path")
-        .data(data.features)
-        .enter()
-        .append("path")
-          .attr("fill", "#b8b8b8")
-          .attr("d", d3.geoPath()
-              .projection(projection)
-          )
-        .style("stroke", "black")
-        .style("opacity", .3)
+            });
 
-    // Add circles:
-    svg
-      .selectAll("myCircles")
-      .data(markers)
-      .enter()
-      .append("circle")
-        .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
-        .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
-        .attr("r", 14)
-        .style("fill", "69b3a2")
-        .attr("stroke", "#69b3a2")
-        .attr("stroke-width", 3)
-        .attr("fill-opacity", .4)
-})
+          });
+  });
+
 
 </script>
