@@ -96,7 +96,7 @@
               d.lat = stationData[i]['GTFS Latitude'];
               d.group = stationData[i].Borough;
               d.size = countPts[0].ENTRIES/10000000000.0;
-              d.station = "104 ST"; 
+              d.station = stationData[i]["Stop Name"]; 
               bubbleData.push(d);
               done.push(stationData[i]['Stop Name'].toUpperCase());
             }
@@ -144,6 +144,7 @@
   // **************************
   // PLOT LINE
   function plotLine(station){
+    station = station.toUpperCase(); 
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
       
       // get data 
@@ -151,8 +152,8 @@
       let data19 = data.filter(d => d.DATE.slice(3) === '19').slice(1,13);
       let data20 = data.filter(d => d.DATE.slice(3) === '20').slice(1,13);
 
-      console.log(data19);
-      console.log(data20);
+      // console.log(data19);
+      // console.log(data20);
 
       // scale axes 
       const xScale_line = d3.scaleLinear()
@@ -246,7 +247,5 @@
   }
 
   plotLine('1 AV');
-  // console.log(entries19); 
-  // console.log(entries20);
 
 </script>
