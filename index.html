@@ -16,6 +16,13 @@
 
 <!-- Create an element where the map will take place -->
 <svg id="my_dataviz" width="600" height="600"></svg>
+<svg id="line_plot" width="600" height="600"></svg>
+<style>
+  path.line {
+  fill: none;
+  stroke: #000;
+}
+</style>
 <p id="value">01/19</p>
 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider">
 
@@ -37,7 +44,7 @@
   });
 
   // The svg
-  var svg = d3.select("svg"),
+  var svg = d3.select("svg#my_dataviz"),
       width = +svg.attr("width"),
       height = +svg.attr("height");
 
@@ -67,6 +74,7 @@
     updateBubbles(); 
   });
 
+  // var bubbleData = [];
   function updateBubbles(){
     // get station data (name, location, etc)
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
@@ -92,6 +100,7 @@
         }
 
         console.log("i should be updating"); 
+
         svg
           .selectAll("circle").remove(); 
 
@@ -113,6 +122,94 @@
     });
   }
 
+  const width_line = 500,
+        height_line = 400,
+        margin_line = {top: 10, right: 0, bottom: 20, left: 150};
 
+  const svg_line = d3.select('svg#line_plot')
+    .attr('width', width_line)
+    .attr('height', height_line);
+
+  const g_line = svg_line.append('g')
+    .classed('marks', true);
+
+  function plotLine(station){
+    d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
+      let data = MTAData.filter(d => d.STATION === station);
+      let data19 = data.filter(d => d.DATE.slice(3) === '19').slice(1,13);
+      let data20 = data.filter(d => d.DATE.slice(3) === '20').slice(1,13);
+
+      console.log(data19);
+      console.log(data20);
+
+      const xScale_line = d3.scaleLinear()
+        .domain(d3.extent(data, function(d) { return parseInt(d.DATE.slice(0,2)); })) //?
+        .range([margin_line.left, width_line - margin_line.right])
+        // .nice();
+
+      const yScale_line = d3.scaleLinear()
+        .domain(d3.extent(data, function(d) { return parseInt(d.ENTRIES); })) //?
+        // .domain([0, d3.max(data, function(d) {
+        //   return parseInt(d.ENTRIES); })])
+        .range([height_line - margin_line.bottom, margin_line.top])
+        // .nice();
+
+      // const colorScale = d3.scaleOrdinal()
+      //     .domain(['2019', '2020']) //? fix
+      //     .range(['blue', 'red']); 
+
+      var entries19 = d3.line()
+        .x(function(d) { 
+          return xScale_line(parseInt(d.DATE.slice(0,2))); })
+        .y(function(d) { 
+          return yScale_line(parseInt(d.ENTRIES)); });
+
+      var entries20 = d3.line()
+        .x(function(d) { 
+          return xScale_line(d.DATE.slice(0,2)); 
+        })
+        .y(function(d) { 
+          return yScale_line(d.ENTRIES); 
+        });
+
+      g_line.append("path")
+        .data([data19])
+        .attr("class", "line")
+        .attr("d", entries19);
+
+      g_line.append("path")
+        .data([data20])
+        .attr("class", "line")
+        .style("stroke", "red")
+        .attr("d", entries20);
+
+      svg_line.append('g')
+        .classed('x-axis', true)
+        .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
+        .call(d3.axisBottom(xScale_line))
+        .append('text')
+          .attr('text-anchor', 'end')
+          .attr('fill', 'black')
+          .attr('font-size', '12px')
+          .attr('font-weight', 'bold')
+          .attr('x', width_line - margin_line.right)
+          .attr('y', -10)
+          .text('Month');
+
+      svg_line.append('g')
+        .classed('y-axis', true)
+        .attr('transform', `translate(${margin_line.left}, 0)`)
+        .call(d3.axisLeft(yScale_line))
+        .append('text')
+            .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
+            .attr('text-anchor', 'end')
+            .attr('fill', 'black')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('People Entering Station');
+      
+    });
+  }
+  plotLine('1 AV');
 
 </script>
