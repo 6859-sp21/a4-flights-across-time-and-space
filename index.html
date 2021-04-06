@@ -20,16 +20,20 @@
 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider">
 
 <script>
-  var selectedDate = "01/19"; 
-
-  d3.select('#value').text(selectedDate);
-
   var dates = ["01/19", "02/19", "03/19", "04/19", "05/19", "06/19", "07/19", "08/19", "09/19", "10/19", "11/19", "12/19", 
               "01/20", "02/20", "03/20", "04/20", "05/20", "06/20", "07/20", "08/20", "09/20", "10/20", "11/20", "12/20"];
 
+  // initialize the date 
+  var selectedDate = "01/19"; 
+  d3.select('#value').text(selectedDate);
+
+  var bubbleData = []; 
+
+  // slider functionality
   d3.select('#dateSlider').on("input", function() {
     selectedDate = dates[this.value]; 
     d3.select('#value').text(selectedDate);
+    updateBubbles(); 
   });
 
   // The svg
@@ -46,60 +50,64 @@
 
   // get NYC map
   d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson").then(mapData => {
-      // Draw the map
-      svg.append("g")
-          .selectAll("path")
-          .data(mapData.features)
-          .enter()
-          .append("path")
-            .attr("fill", "#b8b8b8")
-            .attr("d", d3.geoPath()
-                .projection(projection)
-            )
-          .style("stroke", "black")
-          .style("opacity", .3);
-
-          // get station data (name, location, etc)
-          d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
-            // get turnstile data
-            d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/MTA_formatted.csv").then(MTAData => {
-      
-
-              var counts = MTAData.filter(c => c.DATE === selectedDate);
-              var bubbleData = [];
-              let done = [];
-              for (let i=0; i < stationData.length; i++){
-                if (!done.includes(stationData[i]['Stop Name'].toUpperCase())){
-                  let countPts = counts.filter(c => c.STATION === stationData[i]['Stop Name'].toUpperCase());
-                  if (countPts.length > 0){
-                    let d = {};
-                    d.long = stationData[i]['GTFS Longitude'];
-                    d.lat = stationData[i]['GTFS Latitude'];
-                    d.group = stationData[i].Borough;
-                    d.size = countPts[0].ENTRIES/10000000000.0;
-                    bubbleData.push(d);
-                    done.push(stationData[i]['Stop Name'].toUpperCase());
-                  }
-                }
-              }
-
-              svg
-              .selectAll("myCircles")
-              .data(bubbleData)
-              .enter()
-              .append("circle")
-                .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
-                .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
-                .attr("r", function(d){ return d.size })
-                .style("fill", "69b3a2")
-                .attr("stroke", "#69b3a2")
-                .attr("stroke-width", 3)
-                .attr("fill-opacity", .4)
-
-            });
-
-          });
+    // Draw the map
+    svg.append("g")
+        .selectAll("path")
+        .data(mapData.features)
+        .enter()
+        .append("path")
+          .attr("fill", "#b8b8b8")
+          .attr("d", d3.geoPath()
+              .projection(projection)
+          )
+        .style("stroke", "black")
+        .style("opacity", .3);
   });
+
+  function updateBubbles(){
+    // get station data (name, location, etc)
+    d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
+      // get turnstile data
+      d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/MTA_formatted.csv").then(MTAData => {
+
+
+        var counts = MTAData.filter(c => c.DATE === selectedDate);
+        bubbleData = [];
+        let done = [];
+        for (let i=0; i < stationData.length; i++){
+          if (!done.includes(stationData[i]['Stop Name'].toUpperCase())){
+            let countPts = counts.filter(c => c.STATION === stationData[i]['Stop Name'].toUpperCase());
+            if (countPts.length > 0){
+              let d = {};
+              d.long = stationData[i]['GTFS Longitude'];
+              d.lat = stationData[i]['GTFS Latitude'];
+              d.group = stationData[i].Borough;
+              d.size = countPts[0].ENTRIES/10000000000.0;
+              bubbleData.push(d);
+              done.push(stationData[i]['Stop Name'].toUpperCase());
+            }
+          }
+        }
+
+        svg
+          .selectAll("myCircles")
+          .data(bubbleData)
+          .enter()
+          .append("circle")
+            .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
+            .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
+            .attr("r", function(d){ return d.size })
+            .style("fill", "69b3a2")
+            .attr("stroke", "#69b3a2")
+            .attr("stroke-width", 3)
+            .attr("fill-opacity", .4)
+
+      });
+
+    });
+  }
+  updateBubbles(); 
+
 
 
 </script>
