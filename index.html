@@ -71,7 +71,7 @@
     // get station data (name, location, etc)
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
       // get turnstile data
-      d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/MTA_formatted.csv").then(MTAData => {
+      d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
 
         var counts = MTAData.filter(c => c.DATE === selectedDate);
         bubbleData = [];
