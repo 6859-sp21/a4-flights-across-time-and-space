@@ -62,6 +62,9 @@
           )
         .style("stroke", "black")
         .style("opacity", .3);
+  }).then(() => {
+    // draw bubbles after the map has been drawn 
+    updateBubbles(); 
   });
 
   function updateBubbles(){
@@ -69,7 +72,6 @@
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
       // get turnstile data
       d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/MTA_formatted.csv").then(MTAData => {
-
 
         var counts = MTAData.filter(c => c.DATE === selectedDate);
         bubbleData = [];
@@ -89,8 +91,12 @@
           }
         }
 
+        console.log("i should be updating"); 
         svg
-          .selectAll("myCircles")
+          .selectAll("circle").remove(); 
+
+        svg
+          .selectAll("circle")
           .data(bubbleData)
           .enter()
           .append("circle")
@@ -106,7 +112,6 @@
 
     });
   }
-  updateBubbles(); 
 
 
 
