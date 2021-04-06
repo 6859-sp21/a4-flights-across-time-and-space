@@ -57,6 +57,10 @@
   // set bin thresholds for bubbles
   var bubbleThresholds = [10000000, 100000000, 1000000000, 10000000000, 100000000000];
 
+  var mapTooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
 
   // get NYC map
   d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson").then(mapData => {
@@ -119,8 +123,31 @@
             .attr("stroke-width", 3)
             .attr("fill-opacity", .4)
             .on("mouseover", function(event, d){
+              mapTooltip.transition()
+               .duration(200)
+               .style("opacity", .9);
+               mapTooltip.html(d.station)
+                .style("left", (event.pageX) + "px")
+                .style("background", "pink")
+                .style("top", (event.pageY - 28) + "px");
+
+                d3.select(this)
+                  .attr("fill", "black");
+
               plotLine(d.station); 
             })
+            .on("mouseout", function(event, d) {
+              mapTooltip.transition()
+               .duration(500)
+               .style("opacity", 0);
+
+             d3.select(this)
+              .style("fill", "69b3a2")
+              .attr("stroke", "#69b3a2")
+              .attr("stroke-width", 3)
+              .attr("fill-opacity", .4);
+
+            });
 
       });
 
