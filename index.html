@@ -23,7 +23,7 @@
   stroke: #000;
 }
 </style>
-<p id="value">01/19</p>
+<p id="value">01/20</p>
 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider">
 
 <script>
@@ -31,10 +31,8 @@
               "01/20", "02/20", "03/20", "04/20", "05/20", "06/20", "07/20", "08/20", "09/20", "10/20", "11/20", "12/20"];
 
   // initialize the date 
-  var selectedDate = "01/19"; 
+  var selectedDate = "01/20"; 
   d3.select('#value').text(selectedDate);
-
-  var bubbleData = []; 
 
   // slider functionality
   d3.select('#dateSlider').on("input", function() {
@@ -53,6 +51,20 @@
       .center([-74, 40.78]) // GPS of location to zoom on
       .scale(50000) // This is like the zoom
       .translate([ width/2, height/2 ]);
+
+  // set bin thresholds for bubbles
+  var bubbleThresholds = [];
+  function setBubbleThresholds(){
+    d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
+      var binGenerator = d3.bin();
+      // TODO get different bins if we switch modes
+      console.log(MTAData.ENTRIES); 
+      // var bins = binGenerator(MTAData.ENTRIES);
+      // console.log(bins);
+    });
+  }
+  setBubbleThresholds(); 
+  console.log(bubbleThresholds); 
 
 
   // get NYC map
