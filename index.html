@@ -3,14 +3,34 @@
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v6.js"></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script src="https://d3js.org/d3-array.v2.min.js"></script>
+
+<!-- map libraries -->
 <script src="https://d3js.org/d3-geo.v2.min.js"></script>
 <script src="https://d3js.org/d3-geo-projection.v3.min.js"></script>
 
+<!-- visualization helpers -->
+
+<!-- idk if these are needed -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-array.v2.min.js"></script>
+
 <!-- Create an element where the map will take place -->
 <svg id="my_dataviz" width="600" height="600"></svg>
+<p id="value">01/19</p>
+<input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider">
+
 <script>
+  var selectedDate = "01/19"; 
+
+  d3.select('#value').text(selectedDate);
+
+  var dates = ["01/19", "02/19", "03/19", "04/19", "05/19", "06/19", "07/19", "08/19", "09/19", "10/19", "11/19", "12/19", 
+              "01/20", "02/20", "03/20", "04/20", "05/20", "06/20", "07/20", "08/20", "09/20", "10/20", "11/20", "12/20"];
+
+  d3.select('#dateSlider').on("input", function() {
+    selectedDate = dates[this.value]; 
+    d3.select('#value').text(selectedDate);
+  });
 
   // The svg
   var svg = d3.select("svg"),
@@ -45,7 +65,7 @@
             d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/MTA_formatted.csv").then(MTAData => {
       
 
-              var counts = MTAData.filter(c => c.DATE === '01/19');
+              var counts = MTAData.filter(c => c.DATE === selectedDate);
               var bubbleData = [];
               let done = [];
               for (let i=0; i < stationData.length; i++){
