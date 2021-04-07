@@ -130,8 +130,10 @@
           .scale(70000) // This is like the zoom
           .translate([ width/2, height/2 ]);
         borough = null;
+        previousClick = null;
       } else {
         borough = d.properties.name;
+        previousClick = d;
         if (borough === 'Brooklyn'){
           projection = d3.geoMercator()
             .center([-73.9442, 40.6782]) // GPS of location to zoom on
@@ -163,10 +165,11 @@
             .translate([ width/2, height/2 ]);
         }
       }
+
       boroughs
           .attr("d", path
               .projection(projection));
-      previousClick = d;
+      
       updateBubbles(borough);
     }
 
