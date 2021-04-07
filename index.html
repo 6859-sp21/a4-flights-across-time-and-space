@@ -29,7 +29,7 @@
       
       <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
     </div>
-    <div id="stationData"> </div>
+    <h3 style="text-align: center;"> Station: <span id="stationData"> </span></h3>
     <svg id="line_plot" width="600" height="400"></svg>
   </div>
 </div>
@@ -151,23 +151,24 @@
             .attr("stroke-width", 3)
             .attr("fill-opacity", .4)
             .on("mouseover", function(event, d){
-              mapTooltip.transition()
-               .duration(200)
-               .style("opacity", .9);
-               mapTooltip.html(d.station)
-                .style("left", (event.pageX) + "px")
-                .style("background", "pink")
-                .style("top", (event.pageY - 28) + "px");
+              // mapTooltip.transition()
+              //  .duration(200)
+              //  .style("opacity", .9);
+              //  mapTooltip.html(d.station)
+              //   .style("left", (event.pageX) + "px")
+              //   .style("background", "pink")
+              //   .style("top", (event.pageY - 28) + "px");
 
-                d3.select(this)
-                  .attr("fill", "black");
+              //   d3.select(this)
+              //     .attr("fill", "black");
 
               plotLine(d.station); 
+              d3.select('#stationData').text(d.station);
             })
             .on("mouseout", function(event, d) {
-              mapTooltip.transition()
-               .duration(500)
-               .style("opacity", 0);
+              // mapTooltip.transition()
+              //  .duration(500)
+              //  .style("opacity", 0);
 
              d3.select(this)
               .style("fill", "69b3a2")
@@ -302,5 +303,6 @@
   }
 
   plotLine('1 AV');
+  d3.select('#stationData').text('1 AV');
 
 </script>
