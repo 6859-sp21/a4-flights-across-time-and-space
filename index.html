@@ -108,6 +108,7 @@
           .on("click", clicked)
           .attr("d", path);
 
+    let previousClick = null;
     function clicked(event, d) {
       // const [[x0, y0], [x1, y1]] = path.bounds(d);
       // console.log([[x0, y0], [x1, y1]]);
@@ -123,41 +124,49 @@
       //   d3.pointer(event, svg.node())
       // );
 
-      borough = d.properties.name;
-      if (borough === 'Brooklyn'){
+      if (previousClick === d) {
         projection = d3.geoMercator()
-          .center([-73.9442, 40.6782]) // GPS of location to zoom on
-          .scale(100000) // This is like the zoom
+          .center([-73.9, 40.73]) // GPS of location to zoom on
+          .scale(70000) // This is like the zoom
           .translate([ width/2, height/2 ]);
+        borough = null;
+      } else {
+        borough = d.properties.name;
+        if (borough === 'Brooklyn'){
+          projection = d3.geoMercator()
+            .center([-73.9442, 40.6782]) // GPS of location to zoom on
+            .scale(100000) // This is like the zoom
+            .translate([ width/2, height/2 ]);
+        }
+        else if (borough === 'Bronx'){
+          projection = d3.geoMercator()
+            .center([-73.8648, 40.8448]) // GPS of location to zoom on
+            .scale(100000) // This is like the zoom
+            .translate([ width/2, height/2 ]);
+        }
+        else if (borough === 'Queens'){
+          projection = d3.geoMercator()
+            .center([-73.82, 40.695]) // GPS of location to zoom on
+            .scale(100000) // This is like the zoom
+            .translate([ width/2, height/2 ]);
+        }
+        else if (borough === 'Staten Island'){
+          projection = d3.geoMercator()
+            .center([-74.1502, 40.5795]) // GPS of location to zoom on
+            .scale(100000) // This is like the zoom
+            .translate([ width/2, height/2 ]);
+        }
+        else if (borough === 'Manhattan'){
+          projection = d3.geoMercator()
+            .center([-73.9712, 40.7831]) // GPS of location to zoom on
+            .scale(100000) // This is like the zoom
+            .translate([ width/2, height/2 ]);
+        }
       }
-      else if (borough === 'Bronx'){
-        projection = d3.geoMercator()
-          .center([-73.8648, 40.8448]) // GPS of location to zoom on
-          .scale(100000) // This is like the zoom
-          .translate([ width/2, height/2 ]);
-      }
-      else if (borough === 'Queens'){
-        projection = d3.geoMercator()
-          .center([-73.82, 40.695]) // GPS of location to zoom on
-          .scale(100000) // This is like the zoom
-          .translate([ width/2, height/2 ]);
-      }
-      else if (borough === 'Staten Island'){
-        projection = d3.geoMercator()
-          .center([-74.1502, 40.5795]) // GPS of location to zoom on
-          .scale(100000) // This is like the zoom
-          .translate([ width/2, height/2 ]);
-      }
-      else if (borough === 'Manhattan'){
-        projection = d3.geoMercator()
-          .center([-73.9712, 40.7831]) // GPS of location to zoom on
-          .scale(100000) // This is like the zoom
-          .translate([ width/2, height/2 ]);
-      }
-
       boroughs
           .attr("d", path
               .projection(projection));
+      previousClick = d;
       updateBubbles(borough);
     }
 
