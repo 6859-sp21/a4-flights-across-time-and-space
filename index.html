@@ -34,19 +34,22 @@
 
   // initialize the date 
   var selectedDate = "01/20"; 
+  var borough = null;
   d3.select('#value').text(selectedDate);
 
   // slider functionality
   d3.select('#dateSlider').on("input", function() {
     selectedDate = dates[this.value]; 
     d3.select('#value').text(selectedDate);
-    updateBubbles(); 
+    updateBubbles(borough); 
   });
 
   // The svg
   var svg = d3.select("svg#my_dataviz"),
       width = +svg.attr("width"),
       height = +svg.attr("height");
+
+  const g = svg.append("g");
 
   // Map and projection
   var projection = d3.geoMercator()
@@ -62,34 +65,121 @@
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+  var path = d3.geoPath()
+  // const zoom = d3.zoom()
+  //   .scaleExtent([1, 8])
+  //   .on("zoom", zoomed);
 
+  // function zoomed(event) {
+  //   const {transform} = event;
+  //   g.attr("transform", transform);
+  //   g.attr("stroke-width", 1 / transform.k);
+  // }
   // get NYC map
   d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson").then(mapData => {
     // Draw the map
-    svg.append("g")
+    const boroughs = g.append("g")
         .selectAll("path")
         .data(mapData.features)
         .enter()
         .append("path")
           .attr("fill", "#b8b8b8")
-          .attr("d", d3.geoPath()
+          .attr("cursor", "pointer")
+          .attr("d", path
               .projection(projection)
           )
         .style("stroke", "black")
-        .style("opacity", .3);
+        .style("opacity", .3)
+        .join("path")
+          .on("click", clicked)
+          .attr("d", path);
+
+    function clicked(event, d) {
+      // const [[x0, y0], [x1, y1]] = path.bounds(d);
+      // console.log([[x0, y0], [x1, y1]]);
+      // event.stopPropagation();
+      // boroughs.transition().style("fill", null);
+      // d3.select(this).transition().style("fill", "red");
+      // svg.transition().duration(400).call(
+      //   zoom.transform,
+      //   d3.zoomIdentity
+      //     .translate(width / 2, height / 2)
+      //     .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
+      //     .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+      //   d3.pointer(event, svg.node())
+      // );
+
+      borough = d.properties.name;
+      if (borough === 'Brooklyn'){
+        projection = d3.geoMercator()
+          .center([-73.9442, 40.6782]) // GPS of location to zoom on
+          .scale(100000) // This is like the zoom
+          .translate([ width/2, height/2 ]);
+      }
+      else if (borough === 'Bronx'){
+        projection = d3.geoMercator()
+          .center([-73.8648, 40.8448]) // GPS of location to zoom on
+          .scale(100000) // This is like the zoom
+          .translate([ width/2, height/2 ]);
+      }
+      else if (borough === 'Queens'){
+        projection = d3.geoMercator()
+          .center([-73.82, 40.695]) // GPS of location to zoom on
+          .scale(100000) // This is like the zoom
+          .translate([ width/2, height/2 ]);
+      }
+      else if (borough === 'Staten Island'){
+        projection = d3.geoMercator()
+          .center([-74.1502, 40.5795]) // GPS of location to zoom on
+          .scale(100000) // This is like the zoom
+          .translate([ width/2, height/2 ]);
+      }
+      else if (borough === 'Manhattan'){
+        projection = d3.geoMercator()
+          .center([-73.9712, 40.7831]) // GPS of location to zoom on
+          .scale(100000) // This is like the zoom
+          .translate([ width/2, height/2 ]);
+      }
+
+      boroughs
+          .attr("d", path
+              .projection(projection));
+      updateBubbles(borough);
+    }
+
   }).then(() => {
     // draw bubbles after the map has been drawn 
-    updateBubbles(); 
+    updateBubbles(null); 
   });
 
+  
+
   // var bubbleData = [];
-  function updateBubbles(){
+  function updateBubbles(borough){
     // get station data (name, location, etc)
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
       // get turnstile data
       d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
-
         var counts = MTAData.filter(c => c.DATE === selectedDate);
+
+        if (borough != null){
+          if (borough === 'Brooklyn'){
+            stationData = stationData.filter(d => d.Borough === 'Bk');
+          }
+          else if (borough === 'Bronx'){
+            stationData = stationData.filter(d => d.Borough === 'Bx');
+          }
+          else if (borough === 'Queens'){
+            stationData = stationData.filter(d => d.Borough === 'Q');
+          }
+          else if (borough === 'Staten Island'){
+            stationData = stationData.filter(d => d.Borough === 'SI');
+          }
+          else if (borough === 'Manhattan'){
+            stationData = stationData.filter(d => d.Borough === 'M');
+          }
+        }
+
         bubbleData = [];
         let done = [];
         for (let i=0; i < stationData.length; i++){
@@ -111,7 +201,7 @@
                   d.size = bubbleSizes[j + 1]; 
                 }
               } 
-              console.log(d.size); 
+              // console.log(d.size); 
 
               // d.size = countPts[0].ENTRIES/10000000000.0;
               d.station = stationData[i]["Stop Name"]; 
@@ -138,15 +228,15 @@
             .attr("fill-opacity", .4)
             .on("mouseover", function(event, d){
               mapTooltip.transition()
-               .duration(200)
-               .style("opacity", .9);
-               mapTooltip.html(d.station)
+                .duration(200)
+                .style("opacity", .9);
+              mapTooltip.html(d.station)
                 .style("left", (event.pageX) + "px")
                 .style("background", "pink")
                 .style("top", (event.pageY - 28) + "px");
 
-                d3.select(this)
-                  .attr("fill", "black");
+              d3.select(this)
+                .attr("fill", "black");
 
               plotLine(d.station); 
             })
@@ -198,20 +288,14 @@
 
       // scale axes 
       const xScale_line = d3.scaleLinear()
-        .domain(d3.extent(data, function(d) { return parseInt(d.DATE.slice(0,2)); })) //?
+        .domain(d3.extent(data, function(d) { return parseInt(d.DATE.slice(0,2)); }))
         .range([margin_line.left, width_line - margin_line.right])
-        // .nice();
+        .nice();
 
       const yScale_line = d3.scaleLinear()
-        .domain(d3.extent(data, function(d) { return parseInt(d.ENTRIES); })) //?
-        // .domain([0, d3.max(data, function(d) {
-        //   return parseInt(d.ENTRIES); })])
+        .domain(d3.extent(data, function(d) { return parseInt(d.ENTRIES); }))
         .range([height_line - margin_line.bottom, margin_line.top])
-        // .nice();
-
-      // const colorScale = d3.scaleOrdinal()
-      //     .domain(['2019', '2020']) //? fix
-      //     .range(['blue', 'red']); 
+        .nice();
 
       // get line values 
       entries19 = d3.line()
