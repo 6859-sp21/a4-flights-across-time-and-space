@@ -56,6 +56,7 @@
 
   // set bin thresholds for bubbles
   var bubbleThresholds = [10000000, 100000000, 1000000000, 10000000000, 100000000000];
+  var bubbleSizes = [5, 7, 10, 15, 20, 30]; 
 
   var mapTooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -99,7 +100,20 @@
               d.long = stationData[i]['GTFS Longitude'];
               d.lat = stationData[i]['GTFS Latitude'];
               d.group = stationData[i].Borough;
-              d.size = countPts[0].ENTRIES/10000000000.0;
+
+              let entries = countPts[0].ENTRIES;
+              for(let j = 0; j < bubbleThresholds.length; j++){
+                if(entries < bubbleThresholds[j]){
+                  d.size = bubbleSizes[j]; 
+                  break; 
+                }
+                if(j == bubbleThresholds.length - 1 && entries >= bubbleThresholds[j]){
+                  d.size = bubbleSizes[j + 1]; 
+                }
+              } 
+              console.log(d.size); 
+
+              // d.size = countPts[0].ENTRIES/10000000000.0;
               d.station = stationData[i]["Stop Name"]; 
               bubbleData.push(d);
               done.push(stationData[i]['Stop Name'].toUpperCase());
