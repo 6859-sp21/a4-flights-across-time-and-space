@@ -180,7 +180,6 @@
 
   
 
-  // var bubbleData = [];
   function updateBubbles(borough){
     // get station data (name, location, etc)
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
@@ -206,11 +205,12 @@
           }
         }
 
-        bubbleData = [];
+        var bubbleData = [];
         let done = [];
         for (let i=0; i < stationData.length; i++){
-          if (!done.includes(stationData[i]['Stop Name'].toUpperCase())){
-            let countPts = counts.filter(c => c.STATION === stationData[i]['Stop Name'].toUpperCase());
+          let station = stationData[i]['Stop Name']
+          if (!done.includes(station)){
+            let countPts = counts.filter(c => c.STATION.toLowerCase() === station.toLowerCase());
             if (countPts.length > 0){
               let d = {};
               d.long = stationData[i]['GTFS Longitude'];
@@ -233,7 +233,7 @@
               // bubble size is percent change
               // let newEntries = countPts[0].ENTRIES;
               // let oldEntries = MTAData.filter(c => c.DATE === "01/19");
-              // oldEntries = oldEntries.filter(c => c.STATION === stationData[i]['Stop Name'].toUpperCase());
+              // oldEntries = oldEntries.filter(c => c.STATION === station.toUpperCase());
               // oldEntries = oldEntries[0].ENTRIES;
               // let pChange = (newEntries - oldEntries) / oldEntries; 
               // console.log(pChange); 
@@ -247,9 +247,9 @@
               
 
               // d.size = countPts[0].ENTRIES/10000000000.0;
-              d.station = stationData[i]["Stop Name"]; 
+              d.station = station; 
               bubbleData.push(d);
-              done.push(stationData[i]['Stop Name'].toUpperCase());
+              done.push(station);
             }
           }
         }
@@ -319,7 +319,7 @@
   // **************************
   // PLOT LINE
   function plotLine(station){
-    station = station.toUpperCase(); 
+    // station = station.toUpperCase(); 
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
       
       // get data 
@@ -415,7 +415,7 @@
     });
   }
 
-  plotLine('1 AV');
-  d3.select('#stationData').text('1 AV');
+  plotLine('1 Av');
+  d3.select('#stationData').text('1 Av');
 
 </script>
