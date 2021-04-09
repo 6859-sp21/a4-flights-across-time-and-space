@@ -185,6 +185,7 @@
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
       // get turnstile data
       d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
+
         var counts = MTAData.filter(c => c.DATE === selectedDate);
 
         if (borough != null){
@@ -205,12 +206,14 @@
           }
         }
 
+
+        // note that not all the stations in stationData are included in MTAData
         var bubbleData = [];
         let done = [];
         for (let i=0; i < stationData.length; i++){
           let station = stationData[i]['Stop Name']
           if (!done.includes(station)){
-            let countPts = counts.filter(c => c.STATION.toLowerCase() === station.toLowerCase());
+            let countPts = counts.filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
             if (countPts.length > 0){
               let d = {};
               d.long = stationData[i]['GTFS Longitude'];
@@ -253,6 +256,12 @@
             }
           }
         }
+
+        console.log(stationData.length);
+        // let hyphens = stationData.filter(s => s['Stop Name'].includes('-'));
+        // console.log(hyphens.length);
+        console.log(MTAData.length/24);
+        console.log(bubbleData.length);
 
         svg
           .selectAll("circle").remove(); 

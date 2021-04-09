@@ -352,7 +352,7 @@ Station ID,Complex ID,GTFS Stop ID,Division,Line,Stop Name,Borough,Daytime Route
 350,350,255,IRT,Eastern Pky,Pennsylvania Av,Bk,3,Elevated,40.664635,-73.894895,Manhattan,New Lots,0,
 351,351,256,IRT,Eastern Pky,Van Siclen Av,Bk,3,Elevated,40.665449,-73.889395,Manhattan,New Lots,0,
 352,352,257,IRT,Eastern Pky,New Lots Av,Bk,3,Elevated,40.666235,-73.884079,Manhattan,,0,
-353,353,241,IRT,Nostrand,President Street-Medgar Evers College,Bk,2 5,Subway,40.667883,-73.950683,Manhattan,Flatbush,0,
+353,353,241,IRT,Nostrand,President St,Bk,2 5,Subway,40.667883,-73.950683,Manhattan,Flatbush,0,
 354,354,242,IRT,Nostrand,Sterling St,Bk,2 5,Subway,40.662742,-73.95085,Manhattan,Flatbush,0,
 355,355,243,IRT,Nostrand,Winthrop St,Bk,2 5,Subway,40.656652,-73.9502,Manhattan,Flatbush,0,
 356,356,244,IRT,Nostrand,Church Av,Bk,2 5,Subway,40.650843,-73.949575,Manhattan,Flatbush,1,
