@@ -217,6 +217,8 @@
               d.lat = stationData[i]['GTFS Latitude'];
               d.group = stationData[i].Borough;
 
+
+              // bubble size is # of entries
               let entries = countPts[0].ENTRIES;
               for(let j = 0; j < bubbleThresholds.length; j++){
                 if(entries < bubbleThresholds[j]){
@@ -227,7 +229,22 @@
                   d.size = bubbleSizes[j + 1]; 
                 }
               } 
-              // console.log(d.size); 
+
+              // bubble size is percent change
+              // let newEntries = countPts[0].ENTRIES;
+              // let oldEntries = MTAData.filter(c => c.DATE === "01/19");
+              // oldEntries = oldEntries.filter(c => c.STATION === stationData[i]['Stop Name'].toUpperCase());
+              // oldEntries = oldEntries[0].ENTRIES;
+              // let pChange = (newEntries - oldEntries) / oldEntries; 
+              // console.log(pChange); 
+              // if (pChange > 0){
+              //   pChange = Math.abs(pChange);
+              //   d.size = pChange; 
+              // }
+              // else{
+              //   d.size = 0; 
+              // }
+              
 
               // d.size = countPts[0].ENTRIES/10000000000.0;
               d.station = stationData[i]["Stop Name"]; 
