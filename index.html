@@ -34,7 +34,7 @@
           <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
         </div>
         <svg id="line_plot_total" width="600" height="400"></svg>
-        <h3 style="text-align: center;"> Station: <span id="stationData"> </span></h3>
+        <h3 style="text-align: center;"><span id="stationData"> </span></h3>
         <svg id="line_plot" width="600" height="400"></svg>
       </div>
     </div>
@@ -82,6 +82,17 @@
   var borough = null;
   d3.select('#value').text(selectedDate);
 
+  var selectedStation = ""; 
+  function toggleStationVisibility(){
+    if(selectedStation === ""){
+      svg_line.style("visibility", "hidden");
+      d3.select('#stationData').text("interact with map");
+    }
+    else{
+      svg_line.style("visibility", "visible");
+    }
+  }
+
   // slider functionality
   d3.select('#dateSlider').on("input", function() {
     selectedDate = dates[this.value]; 
@@ -93,6 +104,16 @@
   var svg = d3.select("svg#my_dataviz")
     // .attr("preserveAspectRatio", "xMinYMin meet")
     .attr("viewBox", "0 0 600 600")
+    .on("click", function(event) {
+      console.log(event.target.tagName == "circle"); 
+      if(event.target.tagName !== "circle"){
+        svg.selectAll("circle")
+        .style("opacity", 1.0)
+        .attr("fill-opacity", .4)
+        .attr("stroke", function(d){ return d.color });
+      }
+      
+    })
     .classed("svg-content", true);
 
   // let tempDiv = d3.select("div#map_container")
@@ -367,6 +388,14 @@
         console.log(MTAData.length/24);
         console.log(bubbleData.length);
 
+        drawBubbles(bubbleData); 
+
+      });
+
+    });
+  }
+
+  function drawBubbles(bubbleData){
         svg
           .selectAll("circle").remove(); 
 
@@ -394,10 +423,25 @@
               //   d3.select(this)
               //     .attr("fill", "black");
 
+              svg.selectAll("circle").style("opacity", 0.2);
+
+              d3.select(this)
+              .style("opacity", 1)
+              .attr("fill-opacity", 0.8)
+              .attr("stroke", "white");
+              
+
+              selectedStation = d.station; 
               plotLine(d.station); 
+              toggleStationVisibility(); 
               d3.select('#stationData').text(d.station);
-            })
-            .on("mouseout", function(event, d) {
+            // })
+            // .on("mouseout", function(event, d) {
+            //   d3.select(this)
+            //   .attr("fill-opacity", 0.4)
+            //   .attr("stroke", function(d){ return d.color });
+            //   selectedStation = ""; 
+            //   toggleStationVisibility(); 
             //  d3.select(this)
             //   .style("fill", "69b3a2")
             //   .attr("stroke", "#69b3a2")
@@ -405,10 +449,6 @@
             //   .attr("fill-opacity", .4);
 
             });
-
-      });
-
-    });
   }
 
   const width_line = $(document).width() / 2,
@@ -417,7 +457,7 @@
 
   const svg_line_total = d3.select('svg#line_plot_total')
     .attr("viewBox", "0 0 600 600")
-    .classed("svg-content", true);
+    .classed("svg-content-total", true);
 
   const g_line_total = svg_line_total.append('g')
     .classed('marks', true);
@@ -657,7 +697,8 @@
   }
 
   plotLineAllStations(); 
-  plotLine('1 Av');
-  d3.select('#stationData').text('1 Av');
+  toggleStationVisibility(); 
+  // plotLine('1 Av');
+  // d3.select('#stationData').text('1 Av');
 
 </script>
