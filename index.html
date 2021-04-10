@@ -74,7 +74,8 @@
   var dates = ["01/19", "02/19", "03/19", "04/19", "05/19", "06/19", "07/19", "08/19", "09/19", "10/19", "11/19", "12/19", 
               "01/20", "02/20", "03/20", "04/20", "05/20", "06/20", "07/20", "08/20", "09/20", "10/20", "11/20", "12/20"];
 
-  var lineChartAxesPlotted = false; 
+  var summaryAxesPlotted = false; 
+  var stationAxesPlotted = false;
 
   // initialize the date 
   var selectedDate = "01/20"; 
@@ -381,7 +382,7 @@
             .attr("stroke", function(d){ return d.color })
             .attr("stroke-width", 3)
             .attr("fill-opacity", .4)
-            .on("mouseover", function(event, d){
+            .on("click", function(event, d){
               // mapTooltip.transition()
               //  .duration(200)
               //  .style("opacity", .9);
@@ -493,7 +494,8 @@
         .attr("d", entries20);
 
       // draw axes 
-      if(!lineChartAxesPlotted){
+      if(!stationAxesPlotted){
+        console.log('jere')
         svg_line.append('g')
           .classed('x-axis', true)
           .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
@@ -518,7 +520,7 @@
               .attr('font-size', '12px')
               .attr('font-weight', 'bold')
               .text('People Entering Station');
-          lineChartAxesPlotted = true; 
+          stationAxesPlotted = true; 
         }else{
           svg_line.selectAll("g.y-axis").call(d3.axisLeft(yScale_line)); 
           svg_line.selectAll("g.x-axis").call(d3.axisBottom(xScale_line)); 
@@ -620,7 +622,7 @@
         .attr("d", entries20);
 
       // draw axes 
-      if(!lineChartAxesPlotted){
+      if(!summaryAxesPlotted){
         svg_line_total.append('g')
           .classed('x-axis-total', true)
           .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
@@ -645,7 +647,7 @@
               .attr('font-size', '12px')
               .attr('font-weight', 'bold')
               .text('People Entering Station');
-          lineChartAxesPlotted = true; 
+          summaryAxesPlotted = true; 
         }else{
           svg_line_total.selectAll("g.y-axis-total").call(d3.axisLeft(yScale_line)); 
           svg_line_total.selectAll("g.x-axis-total").call(d3.axisBottom(xScale_line)); 
