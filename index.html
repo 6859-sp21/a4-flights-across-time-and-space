@@ -9,35 +9,64 @@
 <script src="https://d3js.org/d3-geo-projection.v3.min.js"></script>
 
 <!-- visualization helpers -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- idk if these are needed -->
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/d3-array.v2.min.js"></script>
 
 <!-- Create an element where the map will take place -->
-<div>
-  <h1>NYC Subway Station Activity</h1>
-  <p>how has ridership changed during the pandemic?</p>
-</div>
-<div style="display:flex;flex-direction:row;">
-  <div>
-    <svg id="my_dataviz" width="600" height="600"></svg>
+<div id="main_container" style="display:flex;flex-direction:row;">
+  <div id="map_container">
+    <svg id="my_dataviz" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
-  <div >
+  <div id="info_container">
     <div>
-      <h4>month on map : <span id="value">01/20</span> </h4>
-      
-      <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
+      <h1>NYC Subway Station Activity</h1>
+      <p>how has ridership changed during the pandemic?</p>
     </div>
-    <h3 style="text-align: center;"> Station: <span id="stationData"> </span></h3>
-    <svg id="line_plot" width="600" height="400"></svg>
+    <div>
+      <div>
+        <div>
+          <h4>month on map : <span id="value">01/20</span> </h4>
+          
+          <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
+        </div>
+        <h3 style="text-align: center;"> Station: <span id="stationData"> </span></h3>
+        <svg id="line_plot" width="600" height="400"></svg>
+      </div>
+    </div>
   </div>
 </div>
+
+
 <style>
   path.line {
   fill: none;
   stroke: #000;
+  }
+
+  #map_container{
+    width: 65vw;
+    height : 100vh; 
+    overflow: hidden;
+  }
+
+  html, body {
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
 }
+
+/* .svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+} */
+
 </style>
 
 <script>
@@ -59,9 +88,15 @@
   });
 
   // The svg
-  var svg = d3.select("svg#my_dataviz"),
-      width = +svg.attr("width"),
-      height = +svg.attr("height");
+  var svg = d3.select("svg#my_dataviz")
+    // .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 600 600")
+    .classed("svg-content", true);
+
+  // let tempDiv = d3.select("div#map_container")
+      width = $(document).width() / 2;
+      height = $(window).height() * 0.75;
+      // height = +tempDiv.attr("height");
 
   const g = svg.append("g");
 
@@ -221,41 +256,40 @@
               d.group = stationData[i].Borough;
               d.color = "#69b3a2"; 
 
-
               // OPTION 1
               // bubble size is # of entries
-              let entries = countPts[0].ENTRIES;
-              for(let j = 0; j < bubbleThresholds.length; j++){
-                if(entries < bubbleThresholds[j]){
-                  d.size = bubbleSizes[j]; 
-                  break; 
-                }
-                if(j == bubbleThresholds.length - 1 && entries >= bubbleThresholds[j]){
-                  d.size = bubbleSizes[j + 1]; 
-                }
-              } 
+              // let entries = countPts[0].ENTRIES;
+              // for(let j = 0; j < bubbleThresholds.length; j++){
+              //   if(entries < bubbleThresholds[j]){
+              //     d.size = bubbleSizes[j]; 
+              //     break; 
+              //   }
+              //   if(j == bubbleThresholds.length - 1 && entries >= bubbleThresholds[j]){
+              //     d.size = bubbleSizes[j + 1]; 
+              //   }
+              // } 
 
               // OPTION 2
               // bubble size is percent change
-              // let newEntries = countPts[0].ENTRIES;
-              // let oldDate = selectedDate.substring(0, 2) + "/19"; 
-              // let oldEntries = MTAData.filter(c => c.DATE === oldDate).filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
-              // if(oldEntries.length > 0){
-              //   oldEntries = oldEntries[0].ENTRIES;
-              // }
-              // else{
-              //   oldEntries = newEntries; 
-              // }
+              let newEntries = countPts[0].ENTRIES;
+              let oldDate = selectedDate.substring(0, 2) + "/19"; 
+              let oldEntries = MTAData.filter(c => c.DATE === oldDate).filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
+              if(oldEntries.length > 0){
+                oldEntries = oldEntries[0].ENTRIES;
+              }
+              else{
+                oldEntries = newEntries; 
+              }
               
-              // let pChange = (newEntries - oldEntries) / oldEntries * 10; 
-              // if (pChange < 0){
-              //   d.size = Math.abs(pChange);
-              //   d.color = "#c74c63"; 
-              // }
-              // else{
-              //   d.size = pChange; 
-              //   d.color = "#4cc758";
-              // }
+              let pChange = (newEntries - oldEntries) / oldEntries * 10; 
+              if (pChange < 0){
+                d.size = Math.abs(pChange);
+                d.color = "#c74c63"; 
+              }
+              else{
+                d.size = pChange; 
+                d.color = "#4cc758";
+              }
 
               // OPTION 3
               // all bubble same size, color indicates change from 2019 to 2020
