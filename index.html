@@ -33,6 +33,7 @@
           
           <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
         </div>
+        <svg id="line_plot_total" width="600" height="400"></svg>
         <h3 style="text-align: center;"> Station: <span id="stationData"> </span></h3>
         <svg id="line_plot" width="600" height="400"></svg>
       </div>
@@ -109,6 +110,10 @@
   // set bin thresholds for bubbles
   var bubbleThresholds = [1000, 10000, 100000, 1000000, 10000000];
   var bubbleSizes = [1, 3, 5, 7, 9, 11]; 
+
+  // set bubble color scale 
+  var colorScale = d3.scaleSequential(d3.interpolateRdYlGn)
+    .domain([-15, 15]);
 
   var mapTooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -254,7 +259,7 @@
               d.long = stationData[i]['GTFS Longitude'];
               d.lat = stationData[i]['GTFS Latitude'];
               d.group = stationData[i].Borough;
-              d.color = "#69b3a2"; 
+              // d.color = "#69b3a2"; 
 
               // OPTION 1
               // bubble size is # of entries
@@ -282,13 +287,14 @@
               }
               
               let pChange = (newEntries - oldEntries) / oldEntries * 10; 
+              d.color = colorScale(pChange);
               if (pChange < 0){
                 d.size = Math.abs(pChange);
-                d.color = "#c74c63"; 
+                // d.color = "#c74c63"; 
               }
               else{
                 d.size = pChange; 
-                d.color = "#4cc758";
+                // d.color = "#4cc758";
               }
 
               // OPTION 3
@@ -391,15 +397,11 @@
               d3.select('#stationData').text(d.station);
             })
             .on("mouseout", function(event, d) {
-              // mapTooltip.transition()
-              //  .duration(500)
-              //  .style("opacity", 0);
-
-             d3.select(this)
-              .style("fill", "69b3a2")
-              .attr("stroke", "#69b3a2")
-              .attr("stroke-width", 3)
-              .attr("fill-opacity", .4);
+            //  d3.select(this)
+            //   .style("fill", "69b3a2")
+            //   .attr("stroke", "#69b3a2")
+            //   .attr("stroke-width", 3)
+            //   .attr("fill-opacity", .4);
 
             });
 
@@ -408,13 +410,20 @@
     });
   }
 
-  const width_line = 500,
-        height_line = 400,
-        margin_line = {top: 10, right: 0, bottom: 20, left: 150};
+  const width_line = $(document).width() / 2,
+        height_line = $(window).height() * 0.45,
+        margin_line = {top: 10, right: 0, bottom: 0, left: 0};
+
+  const svg_line_total = d3.select('svg#line_plot_total')
+    .attr("viewBox", "0 0 600 600")
+    .classed("svg-content", true);
+
+  const g_line_total = svg_line_total.append('g')
+    .classed('marks', true);
 
   const svg_line = d3.select('svg#line_plot')
-    .attr('width', width_line)
-    .attr('height', height_line);
+    .attr("viewBox", "0 0 600 600")
+    .classed("svg-content", true);
 
   const g_line = svg_line.append('g')
     .classed('marks', true);
@@ -430,11 +439,8 @@
       
       // get data 
       let data = MTAData.filter(d => d.STATION === station);
-      let data19 = data.filter(d => d.DATE.slice(3) === '19').slice(1,13);
-      let data20 = data.filter(d => d.DATE.slice(3) === '20').slice(1,13);
-
-      // console.log(data19);
-      // console.log(data20);
+      let data19 = data.filter(d => d.DATE.slice(3) === '19');
+      let data20 = data.filter(d => d.DATE.slice(3) === '20');
 
       // scale axes 
       const xScale_line = d3.scaleLinear()
@@ -521,6 +527,134 @@
     });
   }
 
+  function plotLineAllStations(){
+    d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
+      
+      // get data 
+      let data19 = MTAData.filter(d => d.DATE.slice(3) === '19');
+      let data20 = MTAData.filter(d => d.DATE.slice(3) === '20');
+
+      let allSummed = []; 
+
+      let data19Summed = [];
+      for(let i = 1; i <= 12; i++){
+        let month = i.toString(); 
+        if(i < 10){
+          month = "0" + month;
+        }
+        console.log(month); 
+        let monthData = data19.filter(d => d.DATE.slice(0, 2) === month);
+        // console.log(monthData); 
+        let totalRidership = monthData.reduce(function (acc, line) {
+          return acc + parseInt(line.ENTRIES); 
+        }, 0);
+        data19Summed.push({"DATE" : month + "/19", "ENTRIES" : totalRidership}); 
+        allSummed.push({"DATE" : month + "/19", "ENTRIES" : totalRidership}); 
+      }
+
+      let data20Summed = [];
+      for(let i = 1; i <= 12; i++){
+        let month = i.toString(); 
+        if(i < 10){
+          month = "0" + month;
+        }
+        let monthData = data20.filter(d => d.DATE.slice(0, 2) === month);
+        let totalRidership = monthData.reduce(function (acc, line) {
+          return acc + parseInt(line.ENTRIES); 
+        }, 0);
+        data20Summed.push({"DATE" : month + "/20", "ENTRIES" : totalRidership}); 
+        allSummed.push({"DATE" : month + "/20", "ENTRIES" : totalRidership});
+      }
+
+      console.log(data19Summed); 
+      console.log(data20Summed); 
+
+      // scale axes 
+      const xScale_line = d3.scaleLinear()
+        .domain(d3.extent(allSummed, function(d) { return parseInt(d.DATE.slice(0,2)); }))
+        .range([margin_line.left, width_line - margin_line.right])
+        .nice();
+
+      const yScale_line = d3.scaleLinear()
+        .domain(d3.extent(allSummed, function(d) { return parseInt(d.ENTRIES); }))
+        .range([height_line - margin_line.bottom, margin_line.top])
+        .nice();
+
+      // get line values 
+      entries19 = d3.line()
+        .x(function(d) { 
+          return xScale_line(parseInt(d.DATE.slice(0,2))); })
+        .y(function(d) { 
+          return yScale_line(parseInt(d.ENTRIES)); });
+
+      entries20 = d3.line()
+        .x(function(d) { 
+          return xScale_line(d.DATE.slice(0,2)); 
+        })
+        .y(function(d) { 
+          return yScale_line(d.ENTRIES); 
+        });
+
+      // draw path 
+      g_line_total.selectAll("path#twntytotal")
+        .data([data19Summed])
+        .join(
+          enter  => enter.append('path'),
+          update => update,
+          exit   => exit.remove()
+        )  
+        .attr("id", "twntytotal")
+        .attr("class", "line")
+        .attr("d", entries19);
+
+      g_line_total.selectAll("path#nntntotal")
+        .data([data20Summed])
+        .join(
+          enter  => enter.append('path'),
+          update => update,
+          exit   => exit.remove()
+        )  
+        .attr("id", "nntntotal")
+        .attr("class", "line")
+        .style("stroke", "red")
+        .attr("d", entries20);
+
+      // draw axes 
+      if(!lineChartAxesPlotted){
+        svg_line_total.append('g')
+          .classed('x-axis-total', true)
+          .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
+          .call(d3.axisBottom(xScale_line))
+          .append('text')
+            .attr('text-anchor', 'end')
+            .attr('fill', 'black')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .attr('x', width_line - margin_line.right)
+            .attr('y', -10)
+            .text('Month');
+
+        svg_line_total.append('g')
+          .classed('y-axis-total', true)
+          .attr('transform', `translate(${margin_line.left}, 0)`)
+          .call(d3.axisLeft(yScale_line))
+          .append('text')
+              .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
+              .attr('text-anchor', 'end')
+              .attr('fill', 'black')
+              .attr('font-size', '12px')
+              .attr('font-weight', 'bold')
+              .text('People Entering Station');
+          lineChartAxesPlotted = true; 
+        }else{
+          svg_line_total.selectAll("g.y-axis-total").call(d3.axisLeft(yScale_line)); 
+          svg_line_total.selectAll("g.x-axis-total").call(d3.axisBottom(xScale_line)); 
+        }
+      
+    });
+  }
+
+  plotLineAllStations(); 
   plotLine('1 Av');
   d3.select('#stationData').text('1 Av');
 
