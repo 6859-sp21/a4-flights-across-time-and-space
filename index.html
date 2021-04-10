@@ -293,24 +293,24 @@
 
               // OPTION 3
               // all bubble same size, color indicates change from 2019 to 2020
-              let newEntries = countPts[0].ENTRIES;
-              let oldDate = selectedDate.substring(0, 2) + "/19"; 
-              let oldEntries = MTAData.filter(c => c.DATE === oldDate).filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
-              if(oldEntries.length > 0){
-                oldEntries = oldEntries[0].ENTRIES;
-              }
-              else{
-                oldEntries = newEntries; 
-              }
+              // let newEntries = countPts[0].ENTRIES;
+              // let oldDate = selectedDate.substring(0, 2) + "/19"; 
+              // let oldEntries = MTAData.filter(c => c.DATE === oldDate).filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
+              // if(oldEntries.length > 0){
+              //   oldEntries = oldEntries[0].ENTRIES;
+              // }
+              // else{
+              //   oldEntries = newEntries; 
+              // }
               
-              d.size = 3; 
-              let pChange = (newEntries - oldEntries) / oldEntries * 10; 
-              if (pChange < 0){
-                d.color = "#c74c63"; 
-              }
-              else{
-                d.color = "#4cc758";
-              }
+              // d.size = 3; 
+              // let pChange = (newEntries - oldEntries) / oldEntries * 10; 
+              // if (pChange < 0){
+              //   d.color = "#c74c63"; 
+              // }
+              // else{
+              //   d.color = "#4cc758";
+              // }
 
               // OPTION 4
               // all bubbles same size, color indicates change from previous month 
