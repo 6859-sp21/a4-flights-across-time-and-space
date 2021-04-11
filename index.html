@@ -26,9 +26,9 @@
     <!-- <svg id="my_dataviz" preserveAspectRatio="xMidYMid meet"></svg> -->
   </div>
   <div id="info_container">
-    <div>
-      <h1>NYC Subway Station Activity</h1>
-      <p>how has ridership changed during the pandemic?</p>
+    <div id="project-title">
+      <h3>NYC Subway Station Activity</h3>
+      <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
     </div>
     <div>
       <div>
@@ -37,7 +37,9 @@
           
           <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
         </div>
-        <svg id="line_plot_total" width="600" height="400"></svg>
+        <div id="line_plot_total_div"> 
+          <svg id="line_plot_total" width="100%" height="100%"></svg>
+        </div>
         <h3 style="text-align: center;"><span id="stationData"> </span></h3>
         <svg id="line_plot" width="600" height="400"></svg>
       </div>
@@ -52,8 +54,15 @@
   stroke: #000;
   }
 
+  #info_container{
+    margin: 10px; 
+    margin-left: 15px;
+    width: 45vw; 
+    overflow:hidden; 
+  }
+
   #map_container{
-    width: 65vw;
+    width: 55vw;
     height : 100vh; 
     overflow: hidden;
   }
@@ -63,7 +72,24 @@
     width:100%;
     margin:0;
     padding:0;
-}
+    background-color: #1a1a1a;
+    color: #ebebeb; 
+    overflow:hidden; 
+    font-family: Verdana, sans-serif;
+  }
+
+  /* div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 28px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+  } */
 
 /* .svg-content {
     display: inline-block;
@@ -165,7 +191,7 @@
 
   var svg = d3.select("#map_container")
     .select("svg")
-    // .attr("viewBox", "0 0 600 600")
+    .attr("viewBox", "0 0 600 600")
     .classed("svg-content", true)
     .attr('pointer-events', 'all')
     .on("click", function(event) {
@@ -420,6 +446,7 @@
             .attr("stroke-width", 3)
             .attr("fill-opacity", .4)
             .style("cursor", "pointer")
+            .attr("class", "bubble")
             .on("click", function(event, d){
               // mapTooltip.transition()
               //  .duration(200)
@@ -469,7 +496,7 @@
   }
 
   function update() {
-    d3.selectAll("circle")
+    d3.selectAll("circle.bubble")
       .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
       .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
   }
@@ -479,12 +506,12 @@
 
   // *************************
   //  LINE PLOT SETUP
-  const width_line = $(document).width() / 2,
-        height_line = $(window).height() * 0.45,
-        margin_line = {top: 10, right: 0, bottom: 0, left: 0};
+  const width_line = $(window).width() * 0.4,
+        height_line = $(window).height() * 0.33,
+        margin_line = {top: 10, right: 0, bottom: 0, left: 70};
 
   const svg_line_total = d3.select('svg#line_plot_total')
-    .attr("viewBox", "0 0 600 600")
+    .attr("viewBox", "0 0 " +  (width_line + 30).toString() + " " + (height_line + 30).toString())
     .classed("svg-content-total", true);
 
   const g_line_total = svg_line_total.append('g')
@@ -595,6 +622,18 @@
       
     });
   }
+
+  // add the tooltip div
+  var totalInfoToolTip = d3.selectAll("div#line_plot_total_div")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "2px")
+  .style("border-radius", "5px")
+  .style("padding", "5px")
+  .text("HEREEEEEEEE"); 
 
   function plotLineAllStations(){
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
@@ -710,31 +749,48 @@
         .transition(d3.transition().duration(2000)); // TODO work on this transition
 
       // // draw the circle on the line chart
-      // svg_line_total.selectAll('circle.verticalLineTotal')
-      //   .data([{"selectedDate" : selectedDate, "entries" : data19Summed}])
-      //   .join(
-      //     enter  => enter.append('circle'),
-      //     update => update,
-      //     exit   => exit.remove()
-      //   )
-      //   .attr('r', 6)
-      //   .attr('x', function(d) {
-      //     console.log(d); 
-      //     return xScale_line(d.selectedDate.slice(0,2))
-      //   })
-      //   .attr('y', function(d) {
-      //     // console.log((d.entries[d.selectedDate.slice(0,2)]) - 1); 
-      //     console.log(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
-      //     return yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
-      //     // return yScale_line(parseInt(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1])); 
-      //   })
+      svg_line_total.selectAll('circle.verticalLineTotal')
+        .data([{"selectedDate" : selectedDate, "entries" : data19Summed}])
+        .join(
+          enter  => enter.append('circle'),
+          update => update,
+          exit   => exit.remove()
+        )
+        .attr('r', 6)
+        .attr('class', 'verticalLineTotal')
+        .attr('cx', function(d) {
+          console.log("look here");
+          console.log(d); 
+          return xScale_line(d.selectedDate.slice(0,2))
+        })
+        .attr('cy', function(d) {
+          // console.log((d.entries[d.selectedDate.slice(0,2)]) - 1); 
+          console.log(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+          console.log(yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES)); 
+          return yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+          // return yScale_line(parseInt(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1])); 
+        })
+        .on("mouseover", function(event, d){
+          console.log(d3.pointer(event)); 
+          totalInfoToolTip
+            .style("opacity", 1)
+          // d3.select(this)
+          //   .style("stroke", "black")
+          //   .style("opacity", 1)
+          .html("The exact value of<br>this cell is: " + d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES)
+          .style("left", (event.pageX) + "px")
+          .style("top", (event.pageY) + "px")
+        })
+        .on("mouseleave", function(event, d){
+          totalInfoToolTip.style("opacity", 0)
+        });
 
       // draw axes 
       if(!summaryAxesPlotted){
         svg_line_total.append('g')
           .classed('x-axis-total', true)
           .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
-          .call(d3.axisBottom(xScale_line))
+          .call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x)))
           .append('text')
             .attr('text-anchor', 'end')
             .attr('fill', 'black')
@@ -756,12 +812,53 @@
               .attr('font-weight', 'bold')
               .text('People Entering Station');
           summaryAxesPlotted = true; 
+
         }else{
           svg_line_total.selectAll("g.y-axis-total").call(d3.axisLeft(yScale_line)); 
           svg_line_total.selectAll("g.x-axis-total").call(d3.axisBottom(xScale_line)); 
         }
       
     });
+  }
+
+  function getMonthLabel(x){
+    if(x == 1){
+      return "Jan"
+    }
+    if(x == 2){
+      return "Feb"
+    }
+    if(x == 3){
+      return "Mar"
+    }
+    if(x == 4){
+      return "Apr"
+    }
+    if(x == 5){
+      return "May"
+    }
+    if(x == 6){
+      return "June"
+    }
+    if(x == 7){
+      return "July"
+    }
+    if(x == 8){
+      return "Aug"
+    }
+    if(x == 9){
+      return "Sept"
+    }
+    if(x == 10){
+      return "Oct"
+    }
+    if(x == 11){
+      return "Nov"
+    }
+    if(x == 12){
+      return "Dec"
+    }
+
   }
 
   plotLineAllStations(); 
