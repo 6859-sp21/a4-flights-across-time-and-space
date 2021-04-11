@@ -102,6 +102,7 @@
     selectedDate = dates[this.value]; 
     d3.select('#value').text(selectedDate);
     updateBubbles(borough); 
+    plotLineAllStations(); // updates the plots
   });
 
   // let tempDiv = d3.select("div#map_container")
@@ -431,12 +432,12 @@
               //   d3.select(this)
               //     .attr("fill", "black");
 
-              svg.selectAll("circle").style("opacity", 0.2);
+              svg.selectAll("circle").style("opacity", 0.2); // TODO make it darker instead of see through
 
               d3.select(this)
               .style("opacity", 1)
-              .attr("fill-opacity", 0.8)
-              .attr("stroke", "white");
+              .attr("fill-opacity", 0.75)
+              // .attr("stroke", "white");
               
 
               selectedStation = d.station; 
@@ -456,7 +457,15 @@
             //   .attr("stroke-width", 3)
             //   .attr("fill-opacity", .4);
 
-            });
+            })
+            .on("mouseover", function(event, d){
+              d3.select(this).attr("stroke", function(d){ return d3.rgb(d.color).brighter(2) })
+                .attr("fill", function(d){ return d3.rgb(d.color).brighter(5) }); 
+            })
+            .on("mouseout", function(event, d){
+              d3.select(this).attr("stroke", function(d){ return d.color })
+                .attr("fill", function(d){ return d.color }); 
+            });;
   }
 
   function update() {
@@ -678,6 +687,47 @@
         .attr("class", "line")
         .style("stroke", "red")
         .attr("d", entries20);
+
+      // draw vertical line
+      svg_line_total.selectAll('line.verticalLineTotal')
+        .data([selectedDate])
+        .join(
+          enter  => enter.append('line'),
+          update => update,
+          exit   => exit.remove()
+        )
+        .attr('x1' , function (d) {
+          console.log(d.slice(0,2)); 
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y1' , yScale_line(0))
+        .attr('x2' , function (d) {
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y2' , -600) // TODO this is hardcoded fix!!!!
+        .attr("stroke", "steelblue")
+        .attr('class', 'verticalLineTotal')
+        .transition(d3.transition().duration(2000)); // TODO work on this transition
+
+      // // draw the circle on the line chart
+      // svg_line_total.selectAll('circle.verticalLineTotal')
+      //   .data([{"selectedDate" : selectedDate, "entries" : data19Summed}])
+      //   .join(
+      //     enter  => enter.append('circle'),
+      //     update => update,
+      //     exit   => exit.remove()
+      //   )
+      //   .attr('r', 6)
+      //   .attr('x', function(d) {
+      //     console.log(d); 
+      //     return xScale_line(d.selectedDate.slice(0,2))
+      //   })
+      //   .attr('y', function(d) {
+      //     // console.log((d.entries[d.selectedDate.slice(0,2)]) - 1); 
+      //     console.log(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+      //     return yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+      //     // return yScale_line(parseInt(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1])); 
+      //   })
 
       // draw axes 
       if(!summaryAxesPlotted){
