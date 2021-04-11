@@ -133,7 +133,7 @@
 
   // let tempDiv = d3.select("div#map_container")
       width = $(document).width() / 2;
-      height = $(window).height() * 0.75;
+      height = $(window).height() / 0.75;
       // height = +tempDiv.attr("height");
 
 
@@ -191,7 +191,7 @@
 
   var svg = d3.select("#map_container")
     .select("svg")
-    .attr("viewBox", "0 0 600 600")
+    // .attr("viewBox", "0 0 600 600")
     .classed("svg-content", true)
     .attr('pointer-events', 'all')
     .on("click", function(event) {
