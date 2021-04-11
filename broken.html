@@ -80,9 +80,10 @@
 
   var summaryAxesPlotted = false; 
   var stationAxesPlotted = false;
+  // var globalXScale; 
 
   // initialize the date 
-  var selectedDate = "01/20"; 
+  var selectedDate = "02/20"; 
   var borough = null;
   d3.select('#value').text(selectedDate);
 
@@ -102,7 +103,27 @@
     selectedDate = dates[this.value]; 
     d3.select('#value').text(selectedDate);
     updateBubbles(borough); 
+    plotLineAllStations(); 
+    // drawVerticalLines();
   });
+
+  // The svg
+  var svg = d3.select("svg#my_dataviz")
+    // .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 600 600")
+    .on("click", function(event) {
+      console.log(event.target.tagName == "circle"); 
+      if(event.target.tagName !== "circle"){
+        svg.selectAll("circle")
+        .style("opacity", 1.0)
+        .attr("fill-opacity", .4)
+        .attr("stroke", function(d){ return d.color });
+        selectedStation = ""; 
+        toggleStationVisibility(); 
+      }
+      
+    })
+    .classed("svg-content", true);
 
   // let tempDiv = d3.select("div#map_container")
       width = $(document).width() / 2;
@@ -395,18 +416,14 @@
   }
 
   function drawBubbles(bubbleData){
-        // svg
-        //   .selectAll("circle").remove(); 
+        svg
+          .selectAll("circle").remove(); 
 
         svg
           .selectAll("circle")
           .data(bubbleData)
-          .join(
-            enter  => enter.append('circle'),
-            update => update,
-            exit   => exit.remove()
-          )
-          // .append("circle")
+          .enter()
+          .append("circle")
             // .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
             // .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
             .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
@@ -653,6 +670,44 @@
           return yScale_line(d.ENTRIES); 
         });
 
+      svg_line_total.selectAll('line.verticalLineTotal')
+        .data([selectedDate])
+        .join(
+          enter  => enter.append('line'),
+          update => update,
+          exit   => exit.remove()
+        )
+        .attr('x1' , function (d) {
+          console.log(d.slice(0,2)); 
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y1' , 0)
+        .attr('x2' , function (d) {
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y2' , 600)
+        .attr("stroke", "steelblue")
+        .attr('class', 'verticalLineTotal');
+
+      svg_line_total.selectAll('circle.verticalLineTotal')
+        .data([{"selectedDate" : selectedDate, "entries" : data19Summed}])
+        .join(
+          enter  => enter.append('circle'),
+          update => update,
+          exit   => exit.remove()
+        )
+        .attr('r', 6)
+        .attr('x', function(d) {
+          console.log(d); 
+          return xScale_line(d.selectedDate.slice(0,2))
+        })
+        .attr('y', function(d) {
+          // console.log((d.entries[d.selectedDate.slice(0,2)]) - 1); 
+          console.log(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+          return yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+          // return yScale_line(parseInt(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1])); 
+        })
+
       // draw path 
       g_line_total.selectAll("path#twntytotal")
         .data([data19Summed])
@@ -714,6 +769,7 @@
 
   plotLineAllStations(); 
   toggleStationVisibility(); 
+  // drawVerticalLines(); 
   // plotLine('1 Av');
   // d3.select('#stationData').text('1 Av');
 
