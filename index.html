@@ -170,6 +170,8 @@
     .on("click", function(event) {
       console.log(event.target.tagName == "circle"); 
       if(event.target.tagName !== "circle"){
+        selectedStation = ""; 
+        toggleStationVisibility(); 
         svg.selectAll("circle")
         .style("opacity", 1.0)
         .attr("fill-opacity", .4)
