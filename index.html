@@ -134,6 +134,7 @@
 
   var summaryAxesPlotted = false; 
   var stationAxesPlotted = false;
+  var trainDropdown = false;
 
   // initialize the date 
   var selectedDate = "01/20"; 
@@ -454,16 +455,20 @@
 
         drawBubbles(bubbleData); 
 
-        for (t of trains.sort()) {
-          const node = document.createElement("LI");
-          const button = document.createElement("BUTTON");
-          button.type = 'button';
-          button.className = 'dropdown-item';
-          button.innerHTML = t;
-          node.appendChild(button);
-          document.getElementById("trains").appendChild(node);
+        if (!trainDropdown) {
+          for (t of trains.sort()) {
+            const node = document.createElement("LI");
+            const button = document.createElement("BUTTON");
+            button.type = 'button';
+            button.className = 'dropdown-item';
+            button.innerHTML = t;
+            node.appendChild(button);
+            document.getElementById("trains").appendChild(node);
+          }
+          trainDropdown = true;
         }
         
+
       });
 
     });
