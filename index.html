@@ -37,8 +37,10 @@
         choose a train
       </button>
       <ul class="dropdown-menu dropdown-menu-dark" id="trains" aria-labelledby="trainDropdown">
+        <li><a href="#" class=dropdown-item onclick="highlightTrain('All')">All</a></li>
       </ul>
     </div>
+
     <div style="overflow-y : auto">
       <div style="overflow-y : auto">
         <div>
@@ -92,6 +94,11 @@
   #map_container{
     width: 55vw;
     height : 100vh; 
+  }
+
+  .dropdown-menu{
+    max-height : 50vh; 
+    overflow: auto;
   }
 
   html, body {
@@ -339,7 +346,7 @@
               d.long = stationData[i]['GTFS Longitude'];
               d.lat = stationData[i]['GTFS Latitude'];
               d.group = stationData[i].Borough;
-              d.trains = stationData[i]['Daytime Routes']
+              d.trains = stationData[i]['Daytime Routes'].split(' ');
               for (let j=0; j<d.trains.length; j++){
                 const train = d.trains[j];
                 if (!trains.includes(train) && train != ' ')
@@ -458,11 +465,7 @@
         if (!trainDropdown) {
           for (t of trains.sort()) {
             const node = document.createElement("LI");
-            const button = document.createElement("BUTTON");
-            button.type = 'button';
-            button.className = 'dropdown-item';
-            button.innerHTML = t;
-            node.appendChild(button);
+            node.innerHTML = `<a href="#" class=dropdown-item onclick="highlightTrain('${t}')">${t}</a>`;
             document.getElementById("trains").appendChild(node);
           }
           trainDropdown = true;
@@ -556,18 +559,22 @@
   // If the user change the map (zoom or drag), I update circle position:
   map.on("moveend", update);
 
+
   // filter by train
-  let train = 'N';
-  function highlightTrain(){
-    // console.log('train')
-    // svg.selectAll("circle").style("opacity", 0.2); // TODO make it darker instead of see through
-    console.log(d3.selectAll("circle.bubble"));
-      // .filter(p => d.trains.includes(train)))
-      // .style("opacity", 1)
-      // .attr("fill-opacity", 0.75)
+  function highlightTrain(train) {
+    if (train === 'All') {
+      svg.selectAll("circle")
+        .style("opacity", 1.0)
+        .attr("fill-opacity", .4)
+    } else {
+      svg.selectAll("circle")
+        .style("opacity", 0.2)
+        .filter(d => d.trains.includes(train))
+        .style("opacity", 1)
+        .attr("fill-opacity", 0.75)
+    }
   }
 
-  highlightTrain();
 
   // *************************
   //  LINE PLOT SETUP
