@@ -30,18 +30,22 @@
       <h3>NYC Subway Station Activity</h3>
       <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
     </div>
-    <div>
-      <div>
+    <div style="overflow-y : auto">
+      <div style="overflow-y : auto">
         <div>
           <h4>month on map : <span id="value">01/20</span> </h4>
           
           <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
         </div>
-        <div id="line_plot_total_div"> 
+        <!-- <div id="line_plot_total_div">  -->
+        <div id="chart">
           <svg id="line_plot_total" width="100%" height="100%"></svg>
         </div>
+        <!-- </div> -->
         <h3 style="text-align: center;"><span id="stationData"> </span></h3>
-        <svg id="line_plot" width="600" height="400"></svg>
+        <div id="chart">
+          <svg id="line_plot" width="100%" height="100%"></svg>
+        </div>
       </div>
     </div>
   </div>
@@ -54,17 +58,28 @@
   stroke: #000;
   }
 
+  #chart {
+    width: 90%; 
+    height: 30%; 
+    align-items: center;
+    align-content: center;
+  }
+
   #info_container{
     margin: 10px; 
     margin-left: 15px;
     width: 45vw; 
-    overflow:hidden; 
+    overflow-y: auto;
+    overflow-x: hidden; 
+  }
+
+  #main_container{
+    overflow: auto;
   }
 
   #map_container{
     width: 55vw;
     height : 100vh; 
-    overflow: hidden;
   }
 
   html, body {
@@ -74,7 +89,8 @@
     padding:0;
     background-color: #1a1a1a;
     color: #ebebeb; 
-    overflow:hidden; 
+    overflow: hidden; 
+
     font-family: Verdana, sans-serif;
   }
 
@@ -133,7 +149,7 @@
 
   // let tempDiv = d3.select("div#map_container")
       width = $(document).width() / 2;
-      height = $(window).height() / 0.75;
+      height = $(window).height() * 0.75;
       // height = +tempDiv.attr("height");
 
 
@@ -460,7 +476,7 @@
               //   d3.select(this)
               //     .attr("fill", "black");
 
-              svg.selectAll("circle").style("opacity", 0.2); // TODO make it darker instead of see through
+              svg.selectAll("circle").style("opacity", 0.4); // TODO make it darker instead of see through
 
               d3.select(this)
               .style("opacity", 1)
@@ -508,7 +524,7 @@
   // *************************
   //  LINE PLOT SETUP
   const width_line = $(window).width() * 0.4,
-        height_line = $(window).height() * 0.33,
+        height_line = $(window).height() * 0.3,
         margin_line = {top: 10, right: 0, bottom: 0, left: 70};
 
   const svg_line_total = d3.select('svg#line_plot_total')
@@ -519,7 +535,7 @@
     .classed('marks', true);
 
   const svg_line = d3.select('svg#line_plot')
-    .attr("viewBox", "0 0 600 600")
+    .attr("viewBox", "0 0 " +  (width_line + 30).toString() + " " + (height_line + 30).toString())
     .classed("svg-content", true);
 
   const g_line = svg_line.append('g')
@@ -594,7 +610,7 @@
         svg_line.append('g')
           .classed('x-axis', true)
           .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
-          .call(d3.axisBottom(xScale_line))
+          .call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x)))
           .append('text')
             .attr('text-anchor', 'end')
             .attr('fill', 'black')
@@ -607,7 +623,7 @@
         svg_line.append('g')
           .classed('y-axis', true)
           .attr('transform', `translate(${margin_line.left}, 0)`)
-          .call(d3.axisLeft(yScale_line))
+          .call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x)))
           .append('text')
               .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
               .attr('text-anchor', 'end')
@@ -617,8 +633,8 @@
               .text('People Entering Station');
           stationAxesPlotted = true; 
         }else{
-          svg_line.selectAll("g.y-axis").call(d3.axisLeft(yScale_line)); 
-          svg_line.selectAll("g.x-axis").call(d3.axisBottom(xScale_line)); 
+          svg_line.selectAll("g.y-axis").call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x))); 
+          svg_line.selectAll("g.x-axis").call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x))); 
         }
       
     });
@@ -804,7 +820,7 @@
         svg_line_total.append('g')
           .classed('y-axis-total', true)
           .attr('transform', `translate(${margin_line.left}, 0)`)
-          .call(d3.axisLeft(yScale_line))
+          .call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x)))
           .append('text')
               .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
               .attr('text-anchor', 'end')
@@ -815,11 +831,36 @@
           summaryAxesPlotted = true; 
 
         }else{
-          svg_line_total.selectAll("g.y-axis-total").call(d3.axisLeft(yScale_line)); 
-          svg_line_total.selectAll("g.x-axis-total").call(d3.axisBottom(xScale_line)); 
+          svg_line_total.selectAll("g.y-axis-total").call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x))); 
+          svg_line_total.selectAll("g.x-axis-total").call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x))); 
         }
       
     });
+  }
+
+  function getFormattedNumber(x){
+    let numLength = x.toString().length; 
+    if(numLength == 9){
+      return x.toString().substring(0, 3) + "M"; 
+    }
+    if(numLength == 8){
+      return x.toString().substring(0, 2) + "M"; 
+    }
+    if(numLength == 7){
+      return x.toString().substring(0, 1) + "." + x.toString().substring(1, 2) + "M"; 
+    }
+    if(numLength == 6){
+      return x.toString().substring(0, 3) + "K"; 
+    }
+    if(numLength == 5){
+      return x.toString().substring(0, 2) + "K"; 
+    }
+    if(numLength == 4){
+      return x.toString().substring(0, 1) + "K"; 
+    }
+    else{
+      return x.toString(); 
+    }
   }
 
   function getMonthLabel(x){
