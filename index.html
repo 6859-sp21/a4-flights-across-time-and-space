@@ -31,18 +31,30 @@
       <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
     </div>
     <div>
-      <div>
-        <div>
-          <h4>month on map : <span id="value">01/20</span> </h4>
-          
-          <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
-        </div>
-        <div id="line_plot_total_div"> 
-          <svg id="line_plot_total" width="100%" height="100%"></svg>
-        </div>
-        <h3 style="text-align: center;"><span id="stationData"> </span></h3>
-        <svg id="line_plot" width="600" height="400"></svg>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+          Dropdown button
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+          <li><a class="dropdown-item active" href="#">Action</a></li>
+          <li><a class="dropdown-item" href="#">Another action</a></li>
+          <li><a class="dropdown-item" href="#">Something else here</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#">Separated link</a></li>
+        </ul>
       </div>
+
+      <div>
+        <h4>month on map : <span id="value">01/20</span> </h4>
+        <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
+      </div>
+
+      <div id="line_plot_total_div"> 
+        <svg id="line_plot_total" width="100%" height="100%"></svg>
+      </div>
+
+      <h3 style="text-align: center;"><span id="stationData"> </span></h3>
+      <svg id="line_plot" width="600" height="400"></svg>
     </div>
   </div>
 </div>
@@ -277,8 +289,6 @@
       // get turnstile data
       d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
 
-        var counts = MTAData.filter(c => c.DATE === selectedDate);
-
         if (borough != null){
           if (borough === 'Brooklyn'){
             stationData = stationData.filter(d => d.Borough === 'Bk');
@@ -298,10 +308,12 @@
         }
 
 
+        var counts = MTAData.filter(c => c.DATE === selectedDate);
         // note that not all the stations in stationData are included in MTAData
         var bubbleData = [];
         let done = [];
-        for (let i=0; i < stationData.length; i++){
+        let trains = [];
+        for (let i=0; i < stationData.length; i++){ // figure out how to handle repeated stations???
           let station = stationData[i]['Stop Name']
           if (!done.includes(station)){
             let countPts = counts.filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
@@ -310,6 +322,12 @@
               d.long = stationData[i]['GTFS Longitude'];
               d.lat = stationData[i]['GTFS Latitude'];
               d.group = stationData[i].Borough;
+              d.trains = stationData[i]['Daytime Routes']
+              for (let j=0; j<d.trains.length; j++){
+                if (!trains.includes(d.trains[j]))
+                  trains.push(d.trains[j]);
+              }
+              
               // d.color = "#69b3a2"; 
 
               // OPTION 1
@@ -418,7 +436,7 @@
         // console.log(bubbleData.length);
 
         drawBubbles(bubbleData); 
-
+        console.log(trains);
       });
 
     });
@@ -497,13 +515,27 @@
   }
 
   function update() {
+    console.log(d3.selectAll("circle.bubble"));
     d3.selectAll("circle.bubble")
       .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
       .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
   }
 
   // If the user change the map (zoom or drag), I update circle position:
-  map.on("moveend", update)
+  map.on("moveend", update);
+
+  // filter by train
+  let train = 'N';
+  function highlightTrain(){
+    // console.log('train')
+    // svg.selectAll("circle").style("opacity", 0.2); // TODO make it darker instead of see through
+    console.log(d3.selectAll("circle.bubble"));
+      // .filter(p => d.trains.includes(train)))
+      // .style("opacity", 1)
+      // .attr("fill-opacity", 0.75)
+  }
+
+  highlightTrain();
 
   // *************************
   //  LINE PLOT SETUP
