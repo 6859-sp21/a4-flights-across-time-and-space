@@ -32,14 +32,10 @@
       <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
     </div>
 
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="trainDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        choose a train
-      </button>
-      <ul class="dropdown-menu dropdown-menu-dark" id="trains" aria-labelledby="trainDropdown">
-        <li><a href="#" class=dropdown-item onclick="highlightTrain('All')">All</a></li>
-      </ul>
-    </div>
+    <h4>select train</h4>
+    <select id="trainSelect" class="form-select" onchange="highlightTrain()" aria-label="Default select example">
+      <option selected>All</option>
+    </select>
 
     <div style="overflow-y : auto">
       <div style="overflow-y : auto">
@@ -94,11 +90,6 @@
   #map_container{
     width: 55vw;
     height : 100vh; 
-  }
-
-  .dropdown-menu{
-    max-height : 50vh; 
-    overflow: auto;
   }
 
   html, body {
@@ -464,9 +455,13 @@
 
         if (!trainDropdown) {
           for (t of trains.sort()) {
-            const node = document.createElement("LI");
-            node.innerHTML = `<a href="#" class=dropdown-item onclick="highlightTrain('${t}')">${t}</a>`;
-            document.getElementById("trains").appendChild(node);
+            // const node = document.createElement("LI");
+            // node.innerHTML = `<a href="#" class=dropdown-item onclick="highlightTrain('${t}')">${t}</a>`;
+            const node = document.createElement('option');
+            node.text = t;
+            node.value = t;
+            // node.onchange = `highlightTrain('${t}')`;
+            document.getElementById("trainSelect").add(node);
           }
           trainDropdown = true;
         }
@@ -559,9 +554,10 @@
   // If the user change the map (zoom or drag), I update circle position:
   map.on("moveend", update);
 
-
   // filter by train
-  function highlightTrain(train) {
+  function highlightTrain() {
+    const train = document.getElementById('trainSelect').value;
+    console.log(train)
     if (train === 'All') {
       svg.selectAll("circle")
         .style("opacity", 1.0)
