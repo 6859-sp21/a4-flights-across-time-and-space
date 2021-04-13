@@ -48,7 +48,7 @@
         <div>
           <h4>month on map : <span id="value">01/20</span> </h4>
           
-          <p>1/2019 <input type="range" min="0" max="23" value="12" step="1" class="slider" id="dateSlider"> 12/2020</p>
+          <p>Jan 2020 <input type="range" min="0" max="11" value="3" step="1" class="slider" id="dateSlider"> Dec 2020</p>
         </div>
         <!-- <div id="line_plot_total_div">  -->
         <div id="chart">
@@ -145,17 +145,16 @@
 </style>
 
 <script>
-  var dates = ["01/19", "02/19", "03/19", "04/19", "05/19", "06/19", "07/19", "08/19", "09/19", "10/19", "11/19", "12/19", 
-              "01/20", "02/20", "03/20", "04/20", "05/20", "06/20", "07/20", "08/20", "09/20", "10/20", "11/20", "12/20"];
+  var dates = [ "01/20", "02/20", "03/20", "04/20", "05/20", "06/20", "07/20", "08/20", "09/20", "10/20", "11/20", "12/20"];
 
   var summaryAxesPlotted = false; 
   var stationAxesPlotted = false;
   var trainDropdown = false;
 
   // initialize the date 
-  var selectedDate = "01/20"; 
+  var selectedDate = "03/20"; 
   var borough = null;
-  d3.select('#value').text(selectedDate);
+  d3.select('#value').text(getMonthLabel(selectedDate.substring(0,2)) + " 2020");
 
   var selectedStation = ""; 
   function toggleStationVisibility(){
@@ -171,7 +170,7 @@
   // slider functionality
   d3.select('#dateSlider').on("input", function() {
     selectedDate = dates[this.value]; 
-    d3.select('#value').text(selectedDate);
+    d3.select('#value').text(getMonthLabel(selectedDate.substring(0,2)) + " 2020");
     updateBubbles(borough); 
     plotLineAllStations(); // updates the plots
   });
@@ -440,7 +439,7 @@
             .attr("r", function(d){ return d.size })
             .style("fill", function(d){ return d.color })
             .attr("stroke", function(d){ return d.color })
-            .attr("stroke-width", 3)
+            .attr("stroke-width", 2)
             .attr("fill-opacity", .4)
             .style("cursor", "pointer")
             .attr("class", "bubble")
@@ -456,11 +455,16 @@
               //   d3.select(this)
               //     .attr("fill", "black");
 
-              svg.selectAll("circle").style("opacity", 0.4); // TODO make it darker instead of see through
+              svg.selectAll("circle").style("opacity", 0.4)
+              .attr("fill-opacity", .4)
+              .attr("stroke", function(d){ return d.color })
+              .attr("fill", function(d){ return d.color}); // TODO make it darker instead of see through
 
               d3.select(this)
               .style("opacity", 1)
-              .attr("fill-opacity", 0.75)
+              .attr("stroke", function(d){ return d3.rgb(d.color).brighter(2) })
+              .attr("fill", function(d){ return d3.rgb(d.color).brighter(5) })
+              .attr("fill-opacity", 0.85)
               // .attr("stroke", "white");
               
 
@@ -524,7 +528,7 @@
   //  LINE PLOT SETUP
   const width_line = $(window).width() * 0.4,
         height_line = $(window).height() * 0.3,
-        margin_line = {top: 10, right: 0, bottom: 0, left: 70};
+        margin_line = {top: 10, right: 30, bottom: 20, left: 70};
 
   const svg_line_total = d3.select('svg#line_plot_total')
     .attr("viewBox", "0 0 " +  (width_line + 30).toString() + " " + (height_line + 30).toString())
@@ -590,6 +594,8 @@
         )  
         .attr("id", "twnty")
         .attr("class", "line")
+        .style("stroke", "#c4f522")
+        .style("stroke-width", 2)
         .attr("d", entries19);
 
       g_line.selectAll("path#nntn")
@@ -601,8 +607,31 @@
         )  
         .attr("id", "nntn")
         .attr("class", "line")
-        .style("stroke", "red")
+        .style("stroke", "#f55022")
+        .style("stroke-width", 2)
         .attr("d", entries20);
+
+      // draw vertical line
+      svg_line_total.selectAll('line.verticalLine')
+        .data([selectedDate])
+        .join(
+          enter  => enter.append('line'),
+          update => update,
+          exit   => exit.remove()
+        )
+        .attr('x1' , function (d) {
+          console.log(d.slice(0,2)); 
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y1' , yScale_line(0))
+        .attr('x2' , function (d) {
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y2' , -600) // TODO this is hardcoded fix!!!!
+        .attr("stroke", "#ffff96")
+        .attr("stroke-width", 0.5)
+        .attr('class', 'verticalLine')
+        .transition(d3.transition().duration(2000)); // TODO work on this transition
 
       // draw axes 
       if(!stationAxesPlotted){
@@ -611,12 +640,12 @@
           .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
           .call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x)))
           .append('text')
+            .attr("fill", "#ebebeb")
             .attr('text-anchor', 'end')
-            .attr('fill', 'black')
-            .attr('font-size', '12px')
+            .attr('font-size', '14px')
             .attr('font-weight', 'bold')
-            .attr('x', width_line - margin_line.right)
-            .attr('y', -10)
+            .attr('x', width_line - margin_line.right + 20)
+            .attr('y', 35)
             .text('Month');
 
         svg_line.append('g')
@@ -624,13 +653,43 @@
           .attr('transform', `translate(${margin_line.left}, 0)`)
           .call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x)))
           .append('text')
-              .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
+              .attr('transform', `translate(-50, ${margin_line.top}) rotate(-90)`)
               .attr('text-anchor', 'end')
-              .attr('fill', 'black')
-              .attr('font-size', '12px')
+              .attr("fill", "#ebebeb")
+              .attr('font-size', '14px')
               .attr('font-weight', 'bold')
               .text('People Entering Station');
           stationAxesPlotted = true; 
+
+        // create a list of keys
+        var keys = ["2019", "2020"]
+
+        // Add one dot in the legend for each name.
+        var size = 15
+        var right_displace = 30; 
+        svg_line.selectAll("mydots")
+          .data(keys)
+          .enter()
+          .append("rect")
+            .attr("x", width_line - right_displace)
+            .attr("y", function(d,i){ return i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("width", size)
+            .attr("height", size)
+            .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
+
+          svg_line.selectAll("mylabels")
+            .data(keys)
+            .enter()
+            .append("text")
+              .attr("x", width_line - right_displace + size*1.2)
+              .attr("y", function(d,i){ return i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+              .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
+              .text(function(d){ return d})
+              .attr("text-anchor", "left")
+              .style("alignment-baseline", "middle")
+              .style("font-size", 14)
+          
+
         }else{
           svg_line.selectAll("g.y-axis").call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x))); 
           svg_line.selectAll("g.x-axis").call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x))); 
@@ -729,6 +788,8 @@
         )  
         .attr("id", "twntytotal")
         .attr("class", "line")
+        .style("stroke", "#c4f522")
+        .style("stroke-width", 2)
         .attr("d", entries19);
 
       g_line_total.selectAll("path#nntntotal")
@@ -740,7 +801,8 @@
         )  
         .attr("id", "nntntotal")
         .attr("class", "line")
-        .style("stroke", "red")
+        .style("stroke", "#f55022")
+        .style("stroke-width", 2)
         .attr("d", entries20);
 
       // draw vertical line
@@ -760,46 +822,47 @@
           return xScale_line(d.slice(0,2));
         })
         .attr('y2' , -600) // TODO this is hardcoded fix!!!!
-        .attr("stroke", "steelblue")
+        .attr("stroke", "#ffff96")
+        .attr("stroke-width", 0.5)
         .attr('class', 'verticalLineTotal')
         .transition(d3.transition().duration(2000)); // TODO work on this transition
 
       // // draw the circle on the line chart
-      svg_line_total.selectAll('circle.verticalLineTotal')
-        .data([{"selectedDate" : selectedDate, "entries" : data19Summed}])
-        .join(
-          enter  => enter.append('circle'),
-          update => update,
-          exit   => exit.remove()
-        )
-        .attr('r', 6)
-        .attr('class', 'verticalLineTotal')
-        .attr('cx', function(d) {
-          console.log("look here");
-          console.log(d); 
-          return xScale_line(d.selectedDate.slice(0,2))
-        })
-        .attr('cy', function(d) {
-          // console.log((d.entries[d.selectedDate.slice(0,2)]) - 1); 
-          console.log(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
-          console.log(yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES)); 
-          return yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
-          // return yScale_line(parseInt(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1])); 
-        })
-        .on("mouseover", function(event, d){
-          console.log(d3.pointer(event)); 
-          totalInfoToolTip
-            .style("opacity", 1)
-          // d3.select(this)
-          //   .style("stroke", "black")
-          //   .style("opacity", 1)
-          .html("The exact value of<br>this cell is: " + d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES)
-          .style("left", (event.pageX) + "px")
-          .style("top", (event.pageY) + "px")
-        })
-        .on("mouseleave", function(event, d){
-          totalInfoToolTip.style("opacity", 0)
-        });
+      // svg_line_total.selectAll('circle.verticalLineTotal')
+      //   .data([{"selectedDate" : selectedDate, "entries" : data19Summed}])
+      //   .join(
+      //     enter  => enter.append('circle'),
+      //     update => update,
+      //     exit   => exit.remove()
+      //   )
+      //   .attr('r', 6)
+      //   .attr('class', 'verticalLineTotal')
+      //   .attr('cx', function(d) {
+      //     console.log("look here");
+      //     console.log(d); 
+      //     return xScale_line(d.selectedDate.slice(0,2))
+      //   })
+      //   .attr('cy', function(d) {
+      //     // console.log((d.entries[d.selectedDate.slice(0,2)]) - 1); 
+      //     console.log(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+      //     console.log(yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES)); 
+      //     return yScale_line(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES); 
+      //     // return yScale_line(parseInt(d.entries[parseInt(d.selectedDate.slice(0,2)) - 1])); 
+      //   })
+      //   .on("mouseover", function(event, d){
+      //     console.log(d3.pointer(event)); 
+      //     totalInfoToolTip
+      //       .style("opacity", 1)
+      //     // d3.select(this)
+      //     //   .style("stroke", "black")
+      //     //   .style("opacity", 1)
+      //     .html("The exact value of<br>this cell is: " + d.entries[parseInt(d.selectedDate.slice(0,2)) - 1].ENTRIES)
+      //     .style("left", (event.pageX) + "px")
+      //     .style("top", (event.pageY) + "px")
+      //   })
+      //   .on("mouseleave", function(event, d){
+      //     totalInfoToolTip.style("opacity", 0)
+      //   });
 
       // draw axes 
       if(!summaryAxesPlotted){
@@ -808,12 +871,12 @@
           .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
           .call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x)))
           .append('text')
+            .attr("fill", "#ebebeb")
             .attr('text-anchor', 'end')
-            .attr('fill', 'black')
-            .attr('font-size', '12px')
+            .attr('font-size', '14px')
             .attr('font-weight', 'bold')
-            .attr('x', width_line - margin_line.right)
-            .attr('y', -10)
+            .attr('x', width_line - margin_line.right + 20)
+            .attr('y', 35)
             .text('Month');
 
         svg_line_total.append('g')
@@ -821,13 +884,41 @@
           .attr('transform', `translate(${margin_line.left}, 0)`)
           .call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x)))
           .append('text')
-              .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
+              .attr('transform', `translate(-50, ${margin_line.top}) rotate(-90)`)
               .attr('text-anchor', 'end')
-              .attr('fill', 'black')
-              .attr('font-size', '12px')
+              .attr("fill", "#ebebeb")
+              .attr('font-size', '14px')
               .attr('font-weight', 'bold')
               .text('People Entering Station');
           summaryAxesPlotted = true; 
+
+        // create a list of keys
+        var keys = ["2019", "2020"]
+
+        // Add one dot in the legend for each name.
+        var size = 15
+        var right_displace = 30; 
+        svg_line_total.selectAll("mydots")
+          .data(keys)
+          .enter()
+          .append("rect")
+            .attr("x", width_line - right_displace)
+            .attr("y", function(d,i){ return i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("width", size)
+            .attr("height", size)
+            .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
+
+          svg_line_total.selectAll("mylabels")
+            .data(keys)
+            .enter()
+            .append("text")
+              .attr("x", width_line - right_displace + size*1.2)
+              .attr("y", function(d,i){ return i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+              .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
+              .text(function(d){ return d})
+              .attr("text-anchor", "left")
+              .style("alignment-baseline", "middle")
+              .style("font-size", 14)
 
         }else{
           svg_line_total.selectAll("g.y-axis-total").call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x))); 
