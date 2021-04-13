@@ -21,17 +21,21 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/d3-array.v2.min.js"></script>
 
-<!-- Create an element where the map will take place -->
-<div id="main_container" style="display:flex;flex-direction:row;">
-  <div id="map_container">
-    <!-- <svg id="my_dataviz" preserveAspectRatio="xMidYMid meet"></svg> -->
-  </div>
-  <div id="info_container">
-    <div id="project-title">
-      <h3>NYC Subway Station Activity</h3>
-      <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
-    </div>
+<title>NYC Subway Station Activity</title>
 
+<div id="project-title" class="row">
+  <div class ="col-8">
+    <h1>NYC Subway Station Activity</h1>
+    <p>how has ridership changed during the pandemic?</p>
+  </div>
+
+  <!-- insert legend here -->
+  <div class="col-4"></div>
+</div>
+
+<div id="main_container" style="display:flex;flex-direction:row;">
+  
+  <div id="info_container">
     <div class="col-3">
       <label for="trainSelect" class="form-label">select train</label>
       <select id="trainSelect" class="form-select" onchange="highlightTrain()">
@@ -61,6 +65,11 @@
       <svg id="line_plot" width="600" height="400"></svg>
     </div>
   </div>
+
+  <!-- Create an element where the map will take place -->
+  <div id="map_container">
+    <!-- <svg id="my_dataviz" preserveAspectRatio="xMidYMid meet"></svg> -->
+  </div>
 </div>
 
 
@@ -78,11 +87,13 @@
   }
 
   #info_container{
-    margin: 10px; 
+    /*margin: 10px; */
     margin-left: 15px;
+    margin-right: 10px;
     width: 45vw; 
     overflow-y: auto;
     overflow-x: hidden; 
+    background-color: #2b2b2b;
   }
 
   #main_container{
@@ -92,6 +103,11 @@
   #map_container{
     width: 55vw;
     height : 100vh; 
+  }
+
+  #project-title{
+    padding-top: 10px;
+    padding-left: 15px;
   }
 
   html, body {
