@@ -52,13 +52,14 @@
         <!-- </div> -->
         <div class="col-3">
           <!-- <label for="trainSelect" class="form-label">select train</label> -->
-          <div style="margin-right: 5px;"> select train</div>
+          <div style="margin-right: 5px;"> view train</div>
           <div>
             <select style="margin-left: 5px;" id="trainSelect" class="form-select" onchange="highlightTrain()">
               <option selected>All</option>
             </select>
           </div>
         </div>
+        <p id='stationHelp'> or choose station on map </p>
         <h3 style="text-align: center;"><span id="stationData"> </span></h3>
         <div id="chart">
           <svg id="line_plot" width="100%" height="100%"></svg>
@@ -83,11 +84,16 @@
   stroke: #000;
   }
 
+  #stationHelp{
+    font-size: 12px; 
+  }
+
   .col-3{
     display:flex;flex-direction:row;align-content: center;
     justify-content: center;
     align-items: center;
     width: 100%; 
+    margin-bottom: 10px; 
   }
 
   #month_help_text{
@@ -180,10 +186,12 @@
   function toggleStationVisibility(){
     if(selectedStation === ""){
       svg_line.style("visibility", "hidden");
-      d3.select('#stationData').text("interact with map");
+      d3.select('#stationHelp').style("visibility", "visible");
+      d3.select('#stationData').text("");
     }
     else{
       svg_line.style("visibility", "visible");
+      d3.select('#stationHelp').style("visibility", "hidden");
     }
   }
 
@@ -541,6 +549,8 @@
 
   // filter by train
   function highlightTrain() {
+    selectedStation = "";
+    toggleStationVisibility(); 
     const train = document.getElementById('trainSelect').value;
     console.log(train)
     if (train === 'All') {
