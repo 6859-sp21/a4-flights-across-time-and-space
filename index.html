@@ -38,9 +38,8 @@
   
   <div id="info_container">
 
-    <div>
-      <div>
-        <div>
+      <div >
+        <div >
           <h4 id="value"> 01/20</h4>
           <p id="month_help_text"> month on map</p>
           
@@ -54,7 +53,7 @@
         <div class="col-3">
           <!-- <label for="trainSelect" class="form-label">select train</label> -->
           <div style="margin-right: 5px;"> view train</div>
-          <div>
+          <div >
             <select style="margin-left: 5px;" id="trainSelect" class="form-select" onchange="highlightTrain()">
               <option selected>All</option>
             </select>
@@ -67,9 +66,9 @@
         </div>
       </div>
 
-      <h3 style="text-align: center;"><span id="stationData"> </span></h3>
-      <svg id="line_plot" width="600" height="400"></svg>
-    </div>
+      <!-- <h3 style="text-align: center;"><span id="stationData"> </span></h3>
+      <svg id="line_plot" width="600" height="400"></svg> -->
+
   </div>
 
   <!-- Create an element where the map will take place -->
@@ -123,7 +122,7 @@
     margin-left: 15px;
     margin-right: 10px;
     width: 45vw; 
-    overflow-y: hidden;
+    height: 100%; 
     overflow-x: hidden; 
     background-color: #2b2b2b;
     align-content: center;
@@ -154,8 +153,8 @@
     padding:0;
     background-color: #1a1a1a;
     color: #ebebeb; 
-    /* overflow-x: hidden;  */
-    overflow: hidden; 
+    overflow-x: hidden; 
+    /* overflow: hidden;  */
 
     font-family: Verdana, sans-serif;
   }
