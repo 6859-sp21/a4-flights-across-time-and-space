@@ -32,10 +32,22 @@
       <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
     </div>
 
-    <h4>select train</h4>
-    <select id="trainSelect" class="form-select" onchange="highlightTrain()" aria-label="Default select example">
-      <option selected>All</option>
-    </select>
+    <div class="row">
+      <div class="col-6">
+        <label for="trainSelect" class="form-label">select train</label>
+        <select id="trainSelect" class="form-select" onchange="highlightTrain()">
+          <option selected>All</option>
+        </select>
+      </div>
+
+      <div class="col-6">
+        <label for="formatSelect" class="form-label">choose data aggregation</label>
+        <select id="formatSelect" class="form-select" onchange="highlightTrain()">
+          <option selected>% difference 2019-2020</option>
+          <option selected>values from 2019 and 2020</option>
+        </select>
+      </div>
+    </div>
 
     <div style="overflow-y : auto">
       <div style="overflow-y : auto">
