@@ -173,6 +173,9 @@
     d3.select('#value').text(getMonthLabel(selectedDate.substring(0,2)) + " 2020");
     updateBubbles(borough); 
     plotLineAllStations(); // updates the plots
+    if(selectedStation !== ""){
+      plotLine(selectedStation); 
+    }
   });
 
   // let tempDiv = d3.select("div#map_container")
@@ -244,6 +247,7 @@
       if(event.target.tagName !== "circle"){
         selectedStation = ""; 
         toggleStationVisibility(); 
+        // reset all circles 
         svg.selectAll("circle")
         .style("opacity", 1.0)
         .attr("fill-opacity", .4)
@@ -462,7 +466,7 @@
 
               d3.select(this)
               .style("opacity", 1)
-              .attr("stroke", function(d){ return d3.rgb(d.color).brighter(2) })
+              .attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
               .attr("fill", function(d){ return d3.rgb(d.color).brighter(5) })
               .attr("fill-opacity", 0.85)
               // .attr("stroke", "white");
@@ -493,6 +497,10 @@
             .on("mouseout", function(event, d){
               d3.select(this).attr("stroke", function(d){ return d.color })
                 .attr("fill", function(d){ return d.color }); 
+
+              if(selectedStation == d.station){
+                d3.select(this).attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
+              }
             });;
   }
 
@@ -594,6 +602,7 @@
         )  
         .attr("id", "twnty")
         .attr("class", "line")
+        .style("stroke", "#c4f522")
         .style("stroke-width", 2)
         .attr("d", entries19);
 
@@ -606,22 +615,45 @@
         )  
         .attr("id", "nntn")
         .attr("class", "line")
-        .style("stroke", "red")
+        .style("stroke", "#f55022")
+        .style("stroke-width", 2)
         .attr("d", entries20);
+
+      // draw vertical line
+      svg_line.selectAll('line.verticalLine')
+        .data([selectedDate])
+        .join(
+          enter  => enter.append('line'),
+          update => update,
+          exit   => exit.remove()
+        )
+        .attr('x1' , function (d) {
+          console.log(d.slice(0,2)); 
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y1' , yScale_line(0))
+        .attr('x2' , function (d) {
+          return xScale_line(d.slice(0,2));
+        })
+        .attr('y2' , -600) // TODO this is hardcoded fix!!!!
+        .attr("stroke", "#ffff96")
+        .attr("stroke-width", 0.5)
+        .attr('class', 'verticalLine')
+        .transition(d3.transition().duration(2000)); // TODO work on this transition
 
       // draw axes 
       if(!stationAxesPlotted){
         svg_line.append('g')
           .classed('x-axis', true)
-          .attr('transform', `translate(0, ${height_line - margin_line.bottom - 100})`)
+          .attr('transform', `translate(0, ${height_line - margin_line.bottom})`)
           .call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x)))
           .append('text')
+            .attr("fill", "#ebebeb")
             .attr('text-anchor', 'end')
-            .attr('fill', 'black')
-            .attr('font-size', '12px')
+            .attr('font-size', '14px')
             .attr('font-weight', 'bold')
-            .attr('x', width_line - margin_line.right)
-            .attr('y', -10)
+            .attr('x', width_line - margin_line.right + 20)
+            .attr('y', 35)
             .text('Month');
 
         svg_line.append('g')
@@ -629,13 +661,43 @@
           .attr('transform', `translate(${margin_line.left}, 0)`)
           .call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x)))
           .append('text')
-              .attr('transform', `translate(20, ${margin_line.top}) rotate(-90)`)
+              .attr('transform', `translate(-50, ${margin_line.top}) rotate(-90)`)
               .attr('text-anchor', 'end')
-              .attr('fill', 'black')
-              .attr('font-size', '12px')
+              .attr("fill", "#ebebeb")
+              .attr('font-size', '14px')
               .attr('font-weight', 'bold')
               .text('People Entering Station');
           stationAxesPlotted = true; 
+
+        // create a list of keys
+        var keys = ["2019", "2020"]
+
+        // Add one dot in the legend for each name.
+        var size = 15
+        var right_displace = 30; 
+        svg_line.selectAll("mydots")
+          .data(keys)
+          .enter()
+          .append("rect")
+            .attr("x", width_line - right_displace)
+            .attr("y", function(d,i){ return i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("width", size)
+            .attr("height", size)
+            .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
+
+          svg_line.selectAll("mylabels")
+            .data(keys)
+            .enter()
+            .append("text")
+              .attr("x", width_line - right_displace + size*1.2)
+              .attr("y", function(d,i){ return i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+              .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
+              .text(function(d){ return d})
+              .attr("text-anchor", "left")
+              .style("alignment-baseline", "middle")
+              .style("font-size", 14)
+          
+
         }else{
           svg_line.selectAll("g.y-axis").call(d3.axisLeft(yScale_line).tickFormat(x => getFormattedNumber(x))); 
           svg_line.selectAll("g.x-axis").call(d3.axisBottom(xScale_line).tickFormat(x => getMonthLabel(x))); 

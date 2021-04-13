@@ -173,6 +173,9 @@
     d3.select('#value').text(getMonthLabel(selectedDate.substring(0,2)) + " 2020");
     updateBubbles(borough); 
     plotLineAllStations(); // updates the plots
+    if(selectedStation !== ""){
+      plotLine(selectedStation); 
+    }
   });
 
   // let tempDiv = d3.select("div#map_container")
@@ -244,6 +247,7 @@
       if(event.target.tagName !== "circle"){
         selectedStation = ""; 
         toggleStationVisibility(); 
+        // reset all circles 
         svg.selectAll("circle")
         .style("opacity", 1.0)
         .attr("fill-opacity", .4)
@@ -462,7 +466,7 @@
 
               d3.select(this)
               .style("opacity", 1)
-              .attr("stroke", function(d){ return d3.rgb(d.color).brighter(2) })
+              .attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
               .attr("fill", function(d){ return d3.rgb(d.color).brighter(5) })
               .attr("fill-opacity", 0.85)
               // .attr("stroke", "white");
@@ -493,6 +497,14 @@
             .on("mouseout", function(event, d){
               d3.select(this).attr("stroke", function(d){ return d.color })
                 .attr("fill", function(d){ return d.color }); 
+
+              if(selectedStation == d.station){
+                d3.select(this).attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
+              }
+              const train = document.getElementById('trainSelect').value;
+              if(d.trains.includes(train)){
+                d3.select(this).attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
+              }
             });;
   }
 
@@ -519,6 +531,7 @@
         .style("opacity", 0.2)
         .filter(d => d.trains.includes(train))
         .style("opacity", 1)
+        .attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
         .attr("fill-opacity", 0.75)
     }
   }
@@ -612,7 +625,7 @@
         .attr("d", entries20);
 
       // draw vertical line
-      svg_line_total.selectAll('line.verticalLine')
+      svg_line.selectAll('line.verticalLine')
         .data([selectedDate])
         .join(
           enter  => enter.append('line'),
