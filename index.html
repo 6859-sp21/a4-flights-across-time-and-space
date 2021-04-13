@@ -32,21 +32,11 @@
       <p style="font-size: 12px">how has ridership changed during the pandemic?</p>
     </div>
 
-    <div class="row">
-      <div class="col-6">
-        <label for="trainSelect" class="form-label">select train</label>
-        <select id="trainSelect" class="form-select" onchange="highlightTrain()">
-          <option selected>All</option>
-        </select>
-      </div>
-
-      <div class="col-6">
-        <label for="formatSelect" class="form-label">choose data aggregation</label>
-        <select id="formatSelect" class="form-select" onchange="highlightTrain()">
-          <option selected>% difference 2019-2020</option>
-          <option selected>values from 2019 and 2020</option>
-        </select>
-      </div>
+    <div class="col-3">
+      <label for="trainSelect" class="form-label">select train</label>
+      <select id="trainSelect" class="form-select" onchange="highlightTrain()">
+        <option selected>All</option>
+      </select>
     </div>
 
     <div style="overflow-y : auto">
@@ -250,58 +240,7 @@
 
   // get NYC map
   d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/new-york-city-boroughs.geojson").then(mapData => {
-
-    let previousClick = null;
-    function clicked(event, d) {
-
-      if (previousClick === d) {
-        projection = d3.geoMercator()
-          .center([-73.9, 40.73]) // GPS of location to zoom on
-          .scale(70000) // This is like the zoom
-          .translate([ width/2, height/2 ]);
-        borough = null;
-        previousClick = null;
-      } else {
-        borough = d.properties.name;
-        previousClick = d;
-        if (borough === 'Brooklyn'){
-          projection = d3.geoMercator()
-            .center([-73.9442, 40.6782]) // GPS of location to zoom on
-            .scale(100000) // This is like the zoom
-            .translate([ width/2, height/2 ]);
-        }
-        else if (borough === 'Bronx'){
-          projection = d3.geoMercator()
-            .center([-73.8648, 40.8448]) // GPS of location to zoom on
-            .scale(100000) // This is like the zoom
-            .translate([ width/2, height/2 ]);
-        }
-        else if (borough === 'Queens'){
-          projection = d3.geoMercator()
-            .center([-73.82, 40.695]) // GPS of location to zoom on
-            .scale(100000) // This is like the zoom
-            .translate([ width/2, height/2 ]);
-        }
-        else if (borough === 'Staten Island'){
-          projection = d3.geoMercator()
-            .center([-74.1502, 40.5795]) // GPS of location to zoom on
-            .scale(100000) // This is like the zoom
-            .translate([ width/2, height/2 ]);
-        }
-        else if (borough === 'Manhattan'){
-          projection = d3.geoMercator()
-            .center([-73.9712, 40.7831]) // GPS of location to zoom on
-            .scale(100000) // This is like the zoom
-            .translate([ width/2, height/2 ]);
-        }
-      }
-
-      boroughs
-          .attr("d", path
-              .projection(projection));
-      
-      updateBubbles(borough);
-    }
+    updateBubbles(true);
 
   }).then(() => {
     // draw bubbles after the map has been drawn 
@@ -310,30 +249,11 @@
 
   
 
-  function updateBubbles(borough){
+  function updateBubbles(isAggregated){
     // get station data (name, location, etc)
     d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/Stations.csv").then(stationData => {
       // get turnstile data
       d3.csv("https://raw.githubusercontent.com/6859-sp21/a4-flights-across-time-and-space/main/data/finalMTA.csv").then(MTAData => {
-
-        if (borough != null){
-          if (borough === 'Brooklyn'){
-            stationData = stationData.filter(d => d.Borough === 'Bk');
-          }
-          else if (borough === 'Bronx'){
-            stationData = stationData.filter(d => d.Borough === 'Bx');
-          }
-          else if (borough === 'Queens'){
-            stationData = stationData.filter(d => d.Borough === 'Q');
-          }
-          else if (borough === 'Staten Island'){
-            stationData = stationData.filter(d => d.Borough === 'SI');
-          }
-          else if (borough === 'Manhattan'){
-            stationData = stationData.filter(d => d.Borough === 'M');
-          }
-        }
-
 
         var counts = MTAData.filter(c => c.DATE === selectedDate);
         // note that not all the stations in stationData are included in MTAData
