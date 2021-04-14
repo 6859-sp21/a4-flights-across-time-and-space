@@ -24,14 +24,24 @@
 <title>NYC Subway Station Activity</title>
 
 <div id="full_container"> 
-  <div id="project-title" class="row">
-    <div class ="col-8">
-      <h1>NYC Subway Station Activity</h1>
-      <p style="color:#b8b8b8;">how has ridership changed during the pandemic?</p>
-    </div>
-  
-    <!-- insert legend here -->
-    <div class="col-4"></div>
+  <div style="display: flex; flex-direction: row; justify-content: space-between;">
+      <div>
+        <h1>NYC Subway Station Activity</h1>
+        <p style="color:#b8b8b8;">how has ridership changed during the pandemic?</p>
+      </div>
+      <div style="width: 30vw; display: flex; flex-direction: column; margin-right: 20px; margin-top: 20px; font-size:12px ">
+        <div style="text-align: center;">
+          percent change in ridership between 2019 to 2020
+        </div>
+        <div>
+          <img src="colorScale.png" style="width: 30vw; height: 10px;"/>
+        </div>
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <span> &#60 -100% </span>
+          <span> 0% </span>
+          <span> +100% &#62 </span>
+        </div>
+      </div>
   </div>
 
 <div id="main_container" style="display:flex;flex-direction:row;align-content: center;">
@@ -80,6 +90,17 @@
 
 
 <style>
+  .col-8{
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: space-between;
+  }
+
+  #color-legend{
+    width: 30vw; 
+  }
+
   #full_container{
     display: flex; 
     flex-direction: column;
@@ -462,6 +483,43 @@
 
     });
   }
+
+  // function drawMapLegend(){
+  //   var mapSvg = d3.select("#map_legend"); 
+  //   var circleSizes = [-100, -50, -3, 3, 50, 100]; 
+  //   var circleValues = ["100%", "50%", "3%", "3%", "50%", "100%"]; 
+
+  // //   mapSvg.selectAll("rect")
+  // //   .data(circleSizes)
+	// // .enter()
+	// // .append("rect")
+	// // .attr("y", 10)
+	// // .attr("height", 100)
+	// // .attr("x", (d,i)=>10 + i*9)
+	// // .attr("width", 6)
+	// // .attr("fill", d=>colorScale(d))
+	// // .attr("stroke", "gray");
+
+  // var width = 960,
+  //   height = 500;
+
+  // mapSvg.selectAll("rect")
+  //   .data(d3.range(-15, 15), function(d) { return d; })
+  // .enter().append("rect")
+  //   .attr("x", function(d, i) { return i; })
+  //   .attr("y", 0)
+  //   .attr("height", 10)
+  //   .attr("width", 1)
+  //   .style("fill", function(d, i ) { return colorScale(d); }); 
+
+  //   mapSvg.selectAll("rect")
+
+  //   // var colorDef = mapSvg.append("def"); 
+  //   // var linearGradient = defs.append("linearGradient")
+  //   // .attr("id", "linear-gradient");
+  // }
+
+  // drawMapLegend(); 
 
   function drawBubbles(bubbleData){
         // svg
@@ -1069,6 +1127,9 @@
     }
 
   }
+
+
+
 
   plotLineAllStations(); 
   toggleStationVisibility(); 
