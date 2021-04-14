@@ -24,25 +24,30 @@
 <title>NYC Subway Station Activity</title>
 
 <div id="full_container"> 
-  <div style="display: flex; flex-direction: row; justify-content: space-between;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; margin-left: 10px; margin-top: 5px">
       <div>
         <h1>NYC Subway Station Activity</h1>
         <p style="color:#b8b8b8;">how has ridership changed during the pandemic?</p>
       </div>
-      <div style="width: 30vw; display: flex; flex-direction: column; margin-right: 20px; margin-top: 20px; font-size:12px ">
+      <div style="width: 30vw; display: flex; flex-direction: column; margin-right: 20px; margin-top: 10px; font-size:12px ">
         <div style="text-align: center;">
           percent change in ridership between 2019 to 2020
         </div>
-        <!-- <div>
-          <svg id="circle_legend"></svg>
-        </div> -->
+        <div style="width:100%; height:35px; display: flex; flex-direction: row; justify-content: space-between; margin-top: 5px">
+          <svg id="circle_legend1" width="100%" height="100%"></svg>
+          <svg id="circle_legend2" width="100%" height="100%"></svg>
+          <svg id="circle_legend3" width="100%" height="100%"></svg>
+          <svg id="circle_legend4" width="100%" height="100%"></svg>
+          <svg id="circle_legend5" width="100%" height="100%"></svg>
+          <svg id="circle_legend6" width="100%" height="100%"></svg>
+        </div>
         <div>
           <img src="colorScale.png" style="width: 30vw; height: 10px;"/>
         </div>
-        <div style="display: flex; flex-direction: row; justify-content: space-between;">
-          <span> &#60 -100% </span>
+        <div style="display: flex; flex-direction: row; justify-content: space-between; margin: 3px;">
+          <span> &#60 -150% </span>
           <span> 0% </span>
-          <span> +100% &#62 </span>
+          <span> +150% &#62 </span>
         </div>
       </div>
   </div>
@@ -142,8 +147,7 @@
   }
 
   #info_container{
-    /*margin: 10px; */
-    margin-left: 15px;
+    margin-left: 10px;
     margin-right: 10px;
     width: 45vw; 
     height: 100%; 
@@ -183,26 +187,10 @@
     font-family: Verdana, sans-serif;
   }
 
-  /* div.tooltip {	
-    position: absolute;			
-    text-align: center;			
-    width: 60px;					
-    height: 28px;					
-    padding: 2px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;			
-    pointer-events: none;			
-  } */
-
-/* .svg-content {
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
-} */
-
+  ::-webkit-scrollbar {
+    width: 0; 
+    background: transparent; 
+  }
 </style>
 
 <script>
@@ -254,8 +242,8 @@
       .translate([ width/2, height/2 ]);
 
   // set bin thresholds for bubbles
-  var bubbleThresholds = [1000, 10000, 100000, 1000000, 10000000];
-  var bubbleSizes = [1, 3, 5, 7, 9, 11]; 
+  // var bubbleThresholds = [1000, 10000, 100000, 1000000, 10000000];
+  // var bubbleSizes = [1, 3, 5, 7, 9, 11]; 
 
   // set bubble color scale 
   var colorScale = d3.scaleSequential(d3.interpolateRdYlGn)
@@ -487,9 +475,76 @@
     });
   }
 
-  // function drawCircleLegend(){
+  drawCircleLegend(); 
 
-  // }
+  function drawCircleLegend(){
+    console.log("hereee");
+    let width = parseInt(d3.select("#circle_legend1").attr("width").slice(0, -2)); 
+    let height = parseInt(d3.select("#circle_legend1").attr("height").slice(0, -2)); 
+
+    console.log(width); 
+    console.log(height); 
+
+    d3.select("#circle_legend1")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(-15))
+      .attr("stroke", colorScale(-15))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "15"); 
+
+    d3.select("#circle_legend2")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(-10))
+      .attr("stroke", colorScale(-10))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "10"); 
+    
+    d3.select("#circle_legend3")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(-5))
+      .attr("stroke", colorScale(-5))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "5"); 
+
+    d3.select("#circle_legend4")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(5))
+      .attr("stroke", colorScale(5))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "5"); 
+
+    d3.select("#circle_legend5")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(10))
+      .attr("stroke", colorScale(10))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "10"); 
+    
+    d3.select("#circle_legend6")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(15))
+      .attr("stroke", colorScale(15))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "15"); 
+  }
 
   // function drawMapLegend(){
   //   var mapSvg = d3.select("#map_legend"); 
