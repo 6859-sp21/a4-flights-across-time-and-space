@@ -41,6 +41,7 @@
           <svg id="circle_legend4" width="100%" height="100%"></svg>
           <svg id="circle_legend5" width="100%" height="100%"></svg>
           <svg id="circle_legend6" width="100%" height="100%"></svg>
+          <svg id="circle_legend7" width="100%" height="100%"></svg>
         </div>
         <div>
           <img src="colorScale.png" style="width: 30vw; height: 10px;"/>
@@ -350,20 +351,6 @@
               
               // d.color = "#69b3a2"; 
 
-              // OPTION 1
-              // bubble size is # of entries
-              // let entries = countPts[0].ENTRIES;
-              // for(let j = 0; j < bubbleThresholds.length; j++){
-              //   if(entries < bubbleThresholds[j]){
-              //     d.size = bubbleSizes[j]; 
-              //     break; 
-              //   }
-              //   if(j == bubbleThresholds.length - 1 && entries >= bubbleThresholds[j]){
-              //     d.size = bubbleSizes[j + 1]; 
-              //   }
-              // } 
-
-              // OPTION 2
               // bubble size is percent change
               let newEntries = countPts[0].ENTRIES;
               let oldDate = selectedDate.substring(0, 2) + "/19"; 
@@ -377,70 +364,17 @@
               
               let pChange = (newEntries - oldEntries) / oldEntries * 10; 
               d.color = colorScale(pChange);
-              if (pChange < 0){
-                d.size = Math.abs(pChange);
+              if (Math.abs(pChange) > 15){
+                d.size = 15;
+              }
+              else if (pChange < 0){
+                d.size = Math.abs(pChange)
                 // d.color = "#c74c63"; 
               }
               else{
                 d.size = pChange; 
                 // d.color = "#4cc758";
               }
-
-              // OPTION 3
-              // all bubble same size, color indicates change from 2019 to 2020
-              // let newEntries = countPts[0].ENTRIES;
-              // let oldDate = selectedDate.substring(0, 2) + "/19"; 
-              // let oldEntries = MTAData.filter(c => c.DATE === oldDate).filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
-              // if(oldEntries.length > 0){
-              //   oldEntries = oldEntries[0].ENTRIES;
-              // }
-              // else{
-              //   oldEntries = newEntries; 
-              // }
-              
-              // d.size = 3; 
-              // let pChange = (newEntries - oldEntries) / oldEntries * 10; 
-              // if (pChange < 0){
-              //   d.color = "#c74c63"; 
-              // }
-              // else{
-              //   d.color = "#4cc758";
-              // }
-
-              // OPTION 4
-              // all bubbles same size, color indicates change from previous month 
-              // let newEntries = countPts[0].ENTRIES;
-              // let oldDate = parseInt(selectedDate.substring(0, 2)) - 1;
-              // console.log(oldDate); 
-              // if(oldDate == 0){
-              //   oldDate = "12/19";
-              // } 
-              // else if(oldDate < 10){
-              //   oldDate = "0" + oldDate.toString() + selectedDate.substring(2, 5); 
-              // }
-              // else{
-              //   oldDate = toString(oldDate) + selectedDate.substring(2, 5);
-              // }
-              // console.log(oldDate); 
-              // let oldEntries = MTAData.filter(c => c.DATE === oldDate).filter(c => c.STATION.split(' ').join('').toLowerCase() === station.split(' ').join('').toLowerCase());
-              // if(oldEntries.length > 0){
-              //   oldEntries = oldEntries[0].ENTRIES;
-              // }
-              // else{
-              //   oldEntries = newEntries; 
-              // }
-              
-              // d.size = 3; 
-              // let pChange = (newEntries - oldEntries) / oldEntries * 10; 
-              // if (pChange < 0){
-              //   d.color = "#c74c63"; 
-              // }
-              // else{
-              //   d.color = "#4cc758";
-              // }
-
-              // end of tests
-
               
               d.station = countPts[0].STATION;
               bubbleData.push(d);
@@ -524,9 +458,19 @@
       .attr("stroke", colorScale(5))
       .attr("stroke-width", 2)
       .attr("fill-opacity", .4)
-      .attr('r', "5"); 
+      .attr('r', "0"); 
 
     d3.select("#circle_legend5")
+      .append("circle")
+      .attr('cx', "50%")
+      .attr('cy', "50%")
+      .style("fill", colorScale(5))
+      .attr("stroke", colorScale(5))
+      .attr("stroke-width", 2)
+      .attr("fill-opacity", .4)
+      .attr('r', "5"); 
+
+    d3.select("#circle_legend6")
       .append("circle")
       .attr('cx', "50%")
       .attr('cy', "50%")
@@ -536,7 +480,7 @@
       .attr("fill-opacity", .4)
       .attr('r', "10"); 
     
-    d3.select("#circle_legend6")
+    d3.select("#circle_legend7")
       .append("circle")
       .attr('cx', "50%")
       .attr('cy', "50%")
@@ -705,7 +649,7 @@
   const width_line = $(window).width() * 0.45,
         // height_line = $(window).height() * 0.3,
         height_line = 0.35 * width_line; 
-        margin_line = {top: 10, right: 30, bottom: 20, left: 120};
+        margin_line = {top: 10, right: 40, bottom: 20, left: 120};
 
   const svg_line_total = d3.select('svg#line_plot_total')
     .attr("viewBox", "0 0 " +  (width_line + 30).toString() + " " + (height_line + 30).toString())
@@ -844,12 +788,13 @@
         // Add one dot in the legend for each name.
         var size = 15
         var right_displace = 30; 
+        let top_displace = 10;
         svg_line.selectAll("mydots")
           .data(keys)
           .enter()
           .append("rect")
             .attr("x", width_line - right_displace)
-            .attr("y", function(d,i){ return i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("y", function(d,i){ return top_displace + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
             .attr("width", size)
             .attr("height", size)
             .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
@@ -859,7 +804,7 @@
             .enter()
             .append("text")
               .attr("x", width_line - right_displace + size*1.2)
-              .attr("y", function(d,i){ return i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+              .attr("y", function(d,i){ return top_displace + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
               .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
               .text(function(d){ return d})
               .attr("text-anchor", "left")
@@ -1096,12 +1041,13 @@
         // Add one dot in the legend for each name.
         var size = 15
         var right_displace = 30; 
+        let top_displace = 10;
         svg_line_total.selectAll("mydots")
           .data(keys)
           .enter()
           .append("rect")
             .attr("x", width_line - right_displace)
-            .attr("y", function(d,i){ return i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("y", function(d,i){ return top_displace + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
             .attr("width", size)
             .attr("height", size)
             .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
@@ -1111,7 +1057,7 @@
             .enter()
             .append("text")
               .attr("x", width_line - right_displace + size*1.2)
-              .attr("y", function(d,i){ return i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+              .attr("y", function(d,i){ return top_displace + i*(size+5) + (size)/2}) // 100 is where the first dot appears. 25 is the distance between dots
               .style("fill", function(d){ return d == "2020" ? "#f55022" : "#c4f522"})
               .text(function(d){ return d})
               .attr("text-anchor", "left")
