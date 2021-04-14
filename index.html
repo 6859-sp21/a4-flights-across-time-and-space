@@ -33,6 +33,9 @@
         <div style="text-align: center;">
           percent change in ridership between 2019 to 2020
         </div>
+        <!-- <div>
+          <svg id="circle_legend"></svg>
+        </div> -->
         <div>
           <img src="colorScale.png" style="width: 30vw; height: 10px;"/>
         </div>
@@ -484,6 +487,10 @@
     });
   }
 
+  // function drawCircleLegend(){
+
+  // }
+
   // function drawMapLegend(){
   //   var mapSvg = d3.select("#map_legend"); 
   //   var circleSizes = [-100, -50, -3, 3, 50, 100]; 
@@ -557,7 +564,7 @@
               //   d3.select(this)
               //     .attr("fill", "black");
 
-              svg.selectAll("circle").style("opacity", 0.4)
+              svg.selectAll("circle").style("opacity", 0.2)
               .attr("fill-opacity", .4)
               .attr("stroke", function(d){ return d.color })
               .attr("fill", function(d){ return d.color}); // TODO make it darker instead of see through
