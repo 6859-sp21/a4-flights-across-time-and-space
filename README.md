@@ -29,11 +29,11 @@ Since ridership depends on the station, we provided a way to get a good understa
 The vertical line across both graphs acts as an indicator for which month is being shown on the map. That way the user can easily compare what they see on the chart to what they see on the map. 
 
 ### Selecting a Train 
-
+Considering that we are dealing with subway data, it was natural to allow the user to filter their data by train. So, we decided to use a selection menu that allows the user to select their desired train and then highlighted the stations corresponding to that train in the map. We originally used a dropdown menu, but this menu did not show the user which train is currently selected. The selection menu, on the other hand, does show this information and allows the user to pick a train in an intuitive way. With this feature, the user can search for any correlations in the data depending on train. 
+We also figured that a natural flow when using this visualization is to start with the map, then choose a train, and then choose a station. This way the user is progressively zooming in more and more on the data. So, we used careful messaging to encourage this. However, the user can perform these actions in whatever order they wish.
 
 ## Development Process 
-An overview of your development process. Describe how the work was split among the team members. Include a commentary on the development process, including answers to the following questions: Roughly how much time did you spend developing your application (in people-hours)? What aspects took the most time?
-Remember to acknowledge all appropriate sources not just in your write-up but also directly on your visualization itself (including the source of your data, and any example visualization you drew inspiration from).
+Implementing this assignment was a bit challenging at times. However, we found a fair amount of resources online and the staff was helpful during office hours. We collaborated over Zoom to plan out our design and tasks. We also created a list of tasks to ensure that we completed all the features that we planned. In addition, we checked in very frequently over text to get feedback and help each other debug.
 
 ### Time spent
 \>50 hours each
