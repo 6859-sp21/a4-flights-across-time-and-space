@@ -14,9 +14,7 @@ One of our original ideas was to use a Sankey diagram to visualize the trains an
 
 ### Visualizing Percent Change between 2019 and 2020 with Size and Color
 After much thought and debate we decided to have the bubbles on our map represent the percent change in ridership between 2019 and 2020. At first we had the bubbles represent the number of entries into each station however we found that the differences were not as clear to see because most station's activities remained in the same order of magnitude despite less riders. 
-And so we decided to visualize the percent difference between 2019 and 2020. CONTINUE HERE AHHHHHHHHHHHHHHHHHHHH *********************
-
-We also considered having all bubble be the same size and color be an indicator but we found that having the dual reinforcement of the same value was both helpful and visually appealing. 
+And so we decided to visualize the percent difference between 2019 and 2020, this way we could see change relative to the station's activity pre-pandemic. The color indicates where the change is positive or negative (increase or decrease) whereas the size inidcates magnitude. Both the size and colors are based on continous spectrums as opposed to binning. Although spectrums are sometimes hard to read for users we think that the dual reinforcement with both size and color being indicators for the same value helps in theis case. 
 
 ### Total Subway Activity Graph
 
@@ -30,6 +28,19 @@ The vertical line across both graphs acts as an indicator for which month is bei
 ## Development Process 
 An overview of your development process. Describe how the work was split among the team members. Include a commentary on the development process, including answers to the following questions: Roughly how much time did you spend developing your application (in people-hours)? What aspects took the most time?
 Remember to acknowledge all appropriate sources not just in your write-up but also directly on your visualization itself (including the source of your data, and any example visualization you drew inspiration from).
-### Splitting the Work
 ### Time spent
+>50 hours each
+
+### Splitting the Work
+We started off by gathering our data which needed a lot of cleaning in order to be usable. Violetta worked on combining datasets from the MTA website and simplified them using a python-script. Shariqah worked on getting and cleaning the station data so that we could map values to the MTA data. 
+
+Shariqah worked on the map. At first we used a ******************** and then we changed to leaflet. She also placed points for where stations should be. 
+
+Shariqah also got the framework for the line chart. (add stuff if you want) 
+
+Shariqah worked on the train functionality. 
+
+Violetta worked on the slider functionality for different months could be displayed when the slider was used. Violetta also worked on stylings and interactions on top of the functionality that Shariqah implemented. She implemented the color and size mapping for the station bubbles as well as how the bubbles are highlighted when hovered, clicked, and unselected. She also worked on making it so that the graph showing station data only appeared when a station was clicked on. She added the legend and also introduced the vertical line to the two graphs. She also worked on making the page and its visuals dynamic relative to window size. 
+
 ### What took the most time?
+We struggled a lot with getting lots of small things to work. It felt like every feature we wanted to implement came with a challenge that we had to spend hours figuring out. It was also hard to find solutions that were not based in Observable so that we can easily apply them in JS and html. For Violetta what took the most time was putting together the data and also making the web page dyanmic. For Shariqah *****
