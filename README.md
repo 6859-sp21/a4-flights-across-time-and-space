@@ -36,7 +36,7 @@ An overview of your development process. Describe how the work was split among t
 Remember to acknowledge all appropriate sources not just in your write-up but also directly on your visualization itself (including the source of your data, and any example visualization you drew inspiration from).
 
 ### Time spent
->50 hours each
+\>50 hours each
 
 ### Splitting the Work
 We started off by gathering our data which needed a lot of cleaning in order to be usable. Violetta worked on combining datasets from the MTA website and simplified them using a python-script. Shariqah worked on getting and cleaning the MTA station data so that we could map values to the correct station locations and trains. 
