@@ -13,7 +13,9 @@ One of our original ideas was to use a Sankey diagram to visualize the trains an
 
 ### Visualizing Percent Change between 2019 and 2020 with Size and Color
 After much thought and debate, we decided to have the bubbles on our map represent the percent change in ridership between 2019 and 2020. At first, we had the bubbles represent the number of entries into each station. However, we found that the differences were not as clear to see because most station's activities remained in the same order of magnitude despite less riders.  
+
 Therefore, we decided to visualize the percent difference between 2019 and 2020. This way, we could see change relative to the station's activity pre-pandemic. The color indicates whether the change is positive or negative (increase or decrease) whereas the size indicates magnitude. Both the size and colors are based on continous spectrums as opposed to binning. Although spectrums are sometimes hard to read for users we think that the dual reinforcement with both size and color being indicators for the same value helps in this case.  
+
 We considered including both the entries map and percent difference map as options for the viewer, but again did not want to overwhelm the audience with too much information to parse. In addition, we found that the depiction of difference with the map and portrayal of entry numbers with the line plots portrayed all aspects of the data effectively on their own.
 
 ### Using a Slider to Watch Ridership Change Over Time
@@ -29,7 +31,8 @@ Since ridership depends on the station, we provided a way to get a good understa
 The vertical line across both graphs acts as an indicator for which month is being shown on the map. That way the user can easily compare what they see on the chart to what they see on the map. 
 
 ### Selecting a Train 
-Considering that we are dealing with subway data, it was natural to allow the user to filter their data by train. So, we decided to use a selection menu that allows the user to select their desired train and then highlighted the stations corresponding to that train in the map. We originally used a dropdown menu, but this menu did not show the user which train is currently selected. The selection menu, on the other hand, does show this information and allows the user to pick a train in an intuitive way. With this feature, the user can search for any correlations in the data depending on train.  
+Considering that we are dealing with subway data, it was natural to allow the user to filter their data by train. So, we decided to use a selection menu that allows the user to select their desired train and then highlighted the stations corresponding to that train in the map. We originally used a dropdown menu, but this menu did not show the user which train is currently selected. The selection menu, on the other hand, does show this information and allows the user to pick a train in an intuitive way. With this feature, the user can search for any correlations in the data depending on train. 
+
 We also figured that a natural flow when using this visualization is to start with the map, then choose a train, and then choose a station. This way the user is progressively zooming in more and more on the data. So, we used careful messaging to encourage this. However, the user can perform these actions in whatever order they wish.
 
 ## Development Process 
