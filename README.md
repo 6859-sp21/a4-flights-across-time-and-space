@@ -1,7 +1,7 @@
 # NYC Subway Activity 
 This visualization aims to compare NYC subway activity at stations across the city between the years 2019 and 2020. March 2020 was the start of pandemic lockdowns in NYC and at that point the number of subway rides dropped drastically and the numbers have not fully recovered since then. We thus compare the year of the pandemic (2020) to the previous year to get a sense of how things have changed. 
 
-MTA turnstile and train station data was used for this visualization. 
+MTA [turnstile](https://qri.cloud/nyc-transit-data/turnstile_daily_counts_2020) and [train station data](http://web.mta.info/developers/developer-data-terms.html#data) was used for this visualization. 
 ********(Do this more properly***********
 
 ## Design Decisions
