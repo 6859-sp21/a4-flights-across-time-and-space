@@ -16,32 +16,34 @@ After much thought and debate, we decided to have the bubbles on our map represe
 Therefore, we decided to visualize the percent difference between 2019 and 2020. This way, we could see change relative to the station's activity pre-pandemic. The color indicates whether the change is positive or negative (increase or decrease) whereas the size indicates magnitude. Both the size and colors are based on continous spectrums as opposed to binning. Although spectrums are sometimes hard to read for users we think that the dual reinforcement with both size and color being indicators for the same value helps in this case.
 We considered including both the entries map and percent difference map as options for the viewer, but again did not want to overwhelm the audience with too much information to parse. In addition, we found that the depiction of difference with the map and portrayal of entry numbers with the line plots portrayed all aspects of the data effectively on their own.
 
+### Using a Slider to Watch Ridership Change Over Time
+We included a slider that determines the month of the data included on the map. An alternative we considered was a dropdown menu, but this would add too much friction when the user tries to adjust time values. It takes many clicks with a menu to see how the map changes across the year, while a slider can achieve this with one simple drag. The user can zoom in on a given month to see the percent change for the month and quickly compare that month to another.
+
 ### Total Subway Activity Graph
-We found that the map did a good job of providing an understanding of MTA ridership during a given month. However, we wanted to give the audience a way to quickly see how overall ridership changed over the two years. We decided to do this with a line graph showing ridership across a year. Each year has its own corresponding colored line on the plot. The x-axis increases in time from left to right, showing the overall decrease in ridership over time in a way that is intuitive for the reader. We also considered doing a grouped bar chart with similar color encodings, but found the plot to be cluttered and the values harder to compare. 
+We found that the map did a good job of providing an understanding of MTA ridership during a given month. However, we wanted to give the audience a way to immediately see how overall ridership changed over the two years. We decided to do this with a line graph showing ridership across the twelve months. Each year has its own corresponding colored line on the plot. The x-axis increases in time from left to right, showing the overall decrease in ridership over time in a way that is intuitive for the reader. We also considered doing a grouped bar chart with similar color encodings, but found the plot to be cluttered and the values harder to compare. 
 
 ### Station Activity View 
+Since ridership depends on the station, we provided a way to get a good understand of the data from a given station. We created a plot that provides more specific values for the number of people entering the station in a given month and year. We again decided to use a line plot to show progression over time and so that the data could be compared to the total subway plot. Choosing a different type of encoding would make it more difficult to compare to that line plot.
 
 ### Vertical Line Across Both Graphs
 The vertical line across both graphs acts as an indicator for which month is being shown on the map. That way the user can easily compare what they see on the chart to what they see on the map. 
 
 ### Selecting a Train 
 
+
 ## Development Process 
 An overview of your development process. Describe how the work was split among the team members. Include a commentary on the development process, including answers to the following questions: Roughly how much time did you spend developing your application (in people-hours)? What aspects took the most time?
 Remember to acknowledge all appropriate sources not just in your write-up but also directly on your visualization itself (including the source of your data, and any example visualization you drew inspiration from).
+
 ### Time spent
 >50 hours each
 
 ### Splitting the Work
-We started off by gathering our data which needed a lot of cleaning in order to be usable. Violetta worked on combining datasets from the MTA website and simplified them using a python-script. Shariqah worked on getting and cleaning the station data so that we could map values to the MTA data. 
+We started off by gathering our data which needed a lot of cleaning in order to be usable. Violetta worked on combining datasets from the MTA website and simplified them using a python-script. Shariqah worked on getting and cleaning the MTA station data so that we could map values to the correct station locations and trains. 
 
-Shariqah worked on the map. At first we used a ******************** and then we changed to leaflet. She also placed points for where stations should be. 
-
-Shariqah also got the framework for the line chart. (add stuff if you want) 
-
-Shariqah worked on the train functionality. 
+Shariqah worked on the map. At first she used a geojson file and SVG to create the map. However, she transitioned to Leaflet after struggling to use the D3 zoom feature to properly update the locations of the bubbles. She also helped combine the two datasets into a usable format for our JavaScript implementation and placed bubbles for where stations should be. Shariqah implemented the baseline function for creating the line charts and the functionality for filtering by train. She also helped with styling, including the navbar and changes to the layout and messaging of the page.
 
 Violetta worked on the slider functionality for different months could be displayed when the slider was used. Violetta also worked on stylings and interactions on top of the functionality that Shariqah implemented. She implemented the color and size mapping for the station bubbles as well as how the bubbles are highlighted when hovered, clicked, and unselected. She also worked on making it so that the graph showing station data only appeared when a station was clicked on. She added the legend and also introduced the vertical line to the two graphs. She also worked on making the page and its visuals dynamic relative to window size. 
 
 ### What took the most time?
-We struggled a lot with getting lots of small things to work. It felt like every feature we wanted to implement came with a challenge that we had to spend hours figuring out. It was also hard to find solutions that were not based in Observable so that we can easily apply them in JS and html. For Violetta what took the most time was putting together the data and also making the web page dyanmic. For Shariqah *****
+We struggled a lot with getting lots of small things to work. It felt like every feature we wanted to implement came with a challenge that we had to spend hours figuring out. It was also hard to find solutions that were not based in Observable so that we can easily apply them in JS and html. Sometimes we struggled to find examples for our desired interactions with the map. For Violetta what took the most time was putting together the data and also making the web page dynamic. For Shariqah, getting the line plot to display the data properly took a lot of debugging in and out of office hours to complete. Getting the right mapping with zoom also took a fair amount of trial and error to achieve.
