@@ -208,10 +208,17 @@
   d3.select('#value').text(getMonthLabel(selectedDate.substring(0,2)) + " 2020");
 
   var selectedStation = ""; 
-  function toggleStationVisibility(){
-    if(selectedStation === ""){
+  function toggleStationVisibility(train = false){
+    if(selectedStation === "" && !train){
       svg_line.style("visibility", "hidden");
       d3.select('#stationHelp').style("visibility", "visible");
+      d3.select('#stationHelp').text("or choose station on map");
+      d3.select('#stationData').text("");
+    } else if (selectedStation === "" && train){
+      svg_line.style("visibility", "hidden");
+      d3.select('#stationHelp').style("visibility", "visible");
+      // document.getElementById('stationHelp').text = 'choose a station';
+      d3.select('#stationHelp').text("choose station on map");
       d3.select('#stationData').text("");
     }
     else{
@@ -300,6 +307,7 @@
       console.log(event.target.tagName == "circle"); 
       if(event.target.tagName !== "circle"){
         selectedStation = ""; 
+
         toggleStationVisibility(); 
         // reset all circles 
         svg.selectAll("circle")
@@ -626,14 +634,17 @@
   // filter by train
   function highlightTrain() {
     selectedStation = "";
-    toggleStationVisibility(); 
+    
     const train = document.getElementById('trainSelect').value;
     console.log(train)
     if (train === 'All') {
+      toggleStationVisibility(); 
       svg.selectAll("circle")
         .style("opacity", 1.0)
         .attr("fill-opacity", .4)
+        .attr("stroke", function(d){ return d.color });
     } else {
+      toggleStationVisibility(true); 
       svg.selectAll("circle")
         .style("opacity", 0.2)
         .filter(d => d.trains.includes(train))
@@ -641,6 +652,8 @@
         .attr("stroke", function(d){ return d3.rgb(d.color).brighter(3) })
         .attr("fill-opacity", 0.75)
     }
+
+    plotLine(train)
   }
 
 
